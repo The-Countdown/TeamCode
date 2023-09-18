@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "DriveMode2")
+@TeleOp(name = "DriveMode")
 public class Drive extends LinearOpMode {
   // private TouchSensor Touch;
-  private DcMotor MotorFL;
-  private DcMotor MotorFR;
-  private DcMotor MotorBL;
-  private DcMotor MotorBR;
+  private DcMotor MotorFL; // this is the motor pluged into 0
+  private DcMotor MotorFR; // this is the motor pluged into 1
+  private DcMotor MotorBL; // this is the motor pluged into 2
+  private DcMotor MotorBR; // this is the motor pluged into 3
   // private Servo ServoArm;
   // private Servo ServoClaw;
   // private DcMotor Arm1;
@@ -24,12 +24,10 @@ public class Drive extends LinearOpMode {
    */
   @Override
   public void runOpMode() {
-  MotorFL = hardwareMap.get(DcMotor.class, "MotorFL");
-  MotorFR = hardwareMap.get(DcMotor.class, "MotorFR");
-  MotorBL = hardwareMap.get(DcMotor.class, "MotorBL");
-  MotorBR = hardwareMap.get(DcMotor.class, "MotorBR");
- 
-  
+  MotorFL = hardwareMap.get(DcMotor.class, "MotorFL"); // this is the motor pluged into 0
+  MotorFR = hardwareMap.get(DcMotor.class, "MotorFR"); // this is the motor pluged into 1
+  MotorBL = hardwareMap.get(DcMotor.class, "MotorBL"); // this is the motor pluged into 2
+  MotorBR = hardwareMap.get(DcMotor.class, "MotorBR"); // this is the motor pluged into 3
   
   telemetry.addData("Status", "Initialized");
         
@@ -37,13 +35,12 @@ public class Drive extends LinearOpMode {
   MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBL.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-  
+ 
   double TSpeed = 1;
   double BSpeed = 2;
   double FBSpeed = 1.5;
   double LRSpeed = 1.5;
   double ROSpeed = 1.5;
-    
   
   double MotorPowerLY1 = 0;
   double MotorPowerLX1 = 0;
@@ -76,6 +73,7 @@ public class Drive extends LinearOpMode {
       float TriggerR21 = gamepad1.right_trigger;
       float TriggerL21 = gamepad1.left_trigger;
       
+      // input for controller number 2
       boolean ButtonX2 = gamepad2.x;
       boolean ButtonY2 = gamepad2.y;
       boolean ButtonA2 = gamepad2.a;
@@ -88,14 +86,16 @@ public class Drive extends LinearOpMode {
       boolean ButtonLBump2 = gamepad2.left_bumper;
       boolean ButtonOptions2 = gamepad2.options;
       boolean ButtonShare2 = gamepad2.share;
-      //boolean ButtonTouch = Touch.isPressed();
       float TriggerR22 = gamepad2.right_trigger;
       float TriggerL22 = gamepad2.left_trigger;
+
+      //boolean ButtonTouch = Touch.isPressed();
       
       MotorPowerRX1 = MotorPowerRX1 * BSpeed;
       MotorPowerLX1 = MotorPowerLX1 * BSpeed;
       MotorPowerLY1 = MotorPowerLY1 * BSpeed;
       
+
       telemetry.addData("Status lx1", MotorPowerLX1);
       telemetry.addData("Status ly1", MotorPowerLY1);
       telemetry.addData("Status rx1", MotorPowerRX1);
@@ -108,17 +108,17 @@ public class Drive extends LinearOpMode {
       //telemetry.addData("Status lol", Arm1.getCurrentPosition());
       telemetry.update();
       
-      if (MotorPowerRX1 > 1) {
+      if (MotorPowerRX1 > 1) { // make sure values don't go over 1
         MotorPowerRX1 = 1;
       }
-      if (MotorPowerLX1 > 1) {
+      if (MotorPowerLX1 > 1) { // make sure values don't go over 1
         MotorPowerLX1 = 1;
       }
-      if (MotorPowerLY1 > 1) {
+      if (MotorPowerLY1 > 1) { // make sure values don't go over 1
         MotorPowerLY1 = 1;
       }
       
-      if (ModeToggle) {
+      if (ModeToggle) { // slow the robot movement down
         MotorPowerRX1 = MotorPowerRX1 / 1.5;
         MotorPowerLX1 = MotorPowerLX1 / 1.5;
         MotorPowerLY1 = MotorPowerLY1 / 1.5;
@@ -169,6 +169,7 @@ public class Drive extends LinearOpMode {
         //ServoClaw.setPosition(0);
       }
       
+      // do not change unless you know what you are doing!!!
       if (MotorPowerLY1 > -0) { // move forward
         MotorFL.setPower(MotorPowerLY1);
         MotorFR.setPower(-MotorPowerLY1);
@@ -176,6 +177,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(-MotorPowerLY1);
       }
       
+      // do not change unless you know what you are doing!!!
       if (MotorPowerLY1 < 0) { // move backword
         MotorFL.setPower(MotorPowerLY1);
         MotorFR.setPower(-MotorPowerLY1);
@@ -183,7 +185,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(-MotorPowerLY1);
       }
       
-      // MotorPowerLX
+      // do not change unless you know what you are doing!!!
       if (MotorPowerRX1 > 0) { // move left
         MotorFL.setPower(-MotorPowerRX1);
         MotorFR.setPower(-MotorPowerRX1);
@@ -191,7 +193,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(MotorPowerRX1);
       }
       
-      // MotorPowerLX
+      // do not change unless you know what you are doing!!!
       if (MotorPowerRX1 < -0) { // move right
         MotorFL.setPower(-MotorPowerRX1);
         MotorFR.setPower(-MotorPowerRX1);
@@ -199,7 +201,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(MotorPowerRX1);
       }
       
-      // MotorPowerRX
+      // do not change unless you know what you are doing!!!
       if (TriggerL21 > 0) { // rotate left
         MotorFL.setPower(TriggerL21);
         MotorFR.setPower(TriggerL21);
@@ -207,7 +209,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(TriggerL21);
       }
       
-      // MotorPowerLX
+      // do not change unless you know what you are doing!!!
       if (TriggerR21 > 0) { // rotate right
         MotorFL.setPower(-TriggerR21);
         MotorFR.setPower(-TriggerR21);
@@ -215,6 +217,7 @@ public class Drive extends LinearOpMode {
         MotorBR.setPower(-TriggerR21);
       }
       
+      // floor all of the motor movement values
       MotorFL.setPower(0);
       MotorFR.setPower(0);
       MotorBL.setPower(0);
