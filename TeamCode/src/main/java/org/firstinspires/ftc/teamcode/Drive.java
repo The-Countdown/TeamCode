@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "DriveMode2")
-public class Mode2 extends LinearOpMode {
+public class Drive extends LinearOpMode {
   private TouchSensor Touch;
   private DcMotor MotorFL;
   private DcMotor MotorFR;
