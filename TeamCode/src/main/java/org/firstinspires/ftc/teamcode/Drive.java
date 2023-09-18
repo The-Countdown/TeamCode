@@ -10,29 +10,24 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "DriveMode2")
 public class Drive extends LinearOpMode {
-  private TouchSensor Touch;
+  // private TouchSensor Touch;
   private DcMotor MotorFL;
   private DcMotor MotorFR;
   private DcMotor MotorBL;
   private DcMotor MotorBR;
-  private Servo ServoArm;
-  private Servo ServoClaw;
-  private DcMotor Arm1;
-  private DcMotor Arm2;
+  // private Servo ServoArm;
+  // private Servo ServoClaw;
+  // private DcMotor Arm1;
+  // private DcMotor Arm2;
   /**
    * This function is executed when this Op Mode is selected from the Driver Station.
    */
   @Override
   public void runOpMode() {
-  Touch = hardwareMap.get(TouchSensor.class, "Touch");
   MotorFL = hardwareMap.get(DcMotor.class, "MotorFL");
   MotorFR = hardwareMap.get(DcMotor.class, "MotorFR");
   MotorBL = hardwareMap.get(DcMotor.class, "MotorBL");
   MotorBR = hardwareMap.get(DcMotor.class, "MotorBR");
-  Arm1 = hardwareMap.get(DcMotor.class, "Arm1");
-  Arm2 = hardwareMap.get(DcMotor.class, "Arm2");
-  ServoArm = hardwareMap.get(Servo.class, "ServoArm");
-  ServoClaw = hardwareMap.get(Servo.class, "ServoClaw");
  
   
   
@@ -42,8 +37,6 @@ public class Drive extends LinearOpMode {
   MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBL.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-  Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
-  Arm2.setDirection(DcMotorSimple.Direction.FORWARD);
   
   double TSpeed = 1;
   double BSpeed = 2;
@@ -95,7 +88,7 @@ public class Drive extends LinearOpMode {
       boolean ButtonLBump2 = gamepad2.left_bumper;
       boolean ButtonOptions2 = gamepad2.options;
       boolean ButtonShare2 = gamepad2.share;
-      boolean ButtonTouch = Touch.isPressed();
+      //boolean ButtonTouch = Touch.isPressed();
       float TriggerR22 = gamepad2.right_trigger;
       float TriggerL22 = gamepad2.left_trigger;
       
@@ -111,8 +104,8 @@ public class Drive extends LinearOpMode {
       telemetry.addData("Status Mode1", ButtonOptions2);
       telemetry.addData("Status Share1", ButtonShare2);
       telemetry.addData("Status ModeToggle1", ModeToggle);
-      telemetry.addData("Status Touch", ButtonTouch);
-      telemetry.addData("Status lol", Arm1.getCurrentPosition());
+      //telemetry.addData("Status Touch", ButtonTouch);
+      //telemetry.addData("Status lol", Arm1.getCurrentPosition());
       telemetry.update();
       
       if (MotorPowerRX1 > 1) {
@@ -142,38 +135,38 @@ public class Drive extends LinearOpMode {
       }
       
       if (ButtonRBump2) {
-        Arm2.setPower(-1);
+        //Arm2.setPower(-1);
       }
       
       if (ButtonLBump2) {
-        Arm2.setPower(1);
+        //Arm2.setPower(1);
       }
       
       if (ButtonDPup2) {
-        Arm1.setPower(1);
+        //Arm1.setPower(1);
       }
       
       if (ButtonDPdown2) {
-        Arm1.setPower(-1);
+        //Arm1.setPower(-1);
         
       }
       
       
       if (ButtonDPleft2) {
-        ServoArm.setPosition(0);
+        //ervoArm.setPosition(0);
       }
       
       if (ButtonDPright2) {
-        ServoArm.setPosition(1);
+        //ServoArm.setPosition(1);
         
       }
       
       if (ButtonA2) {
-        ServoClaw.setPosition(1);
+        //ServoClaw.setPosition(1);
       }
       
       if (ButtonX2) {
-        ServoClaw.setPosition(0);
+        //ServoClaw.setPosition(0);
       }
       
       if (MotorPowerLY1 > -0) { // move forward
@@ -226,8 +219,8 @@ public class Drive extends LinearOpMode {
       MotorFR.setPower(0);
       MotorBL.setPower(0);
       MotorBR.setPower(0);
-      Arm1.setPower(0);
-      Arm2.setPower(0);
+      //Arm1.setPower(0);
+      //Arm2.setPower(0);
 
       
       
