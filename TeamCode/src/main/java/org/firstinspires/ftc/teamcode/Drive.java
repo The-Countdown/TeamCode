@@ -224,15 +224,6 @@ public class Drive extends LinearOpMode {
       MotorBR.setPower(0);
       //Arm1.setPower(0);
       //Arm2.setPower(0);
-
-      
-      
-
-    
-      
     }
   }
 }
-
-
-
