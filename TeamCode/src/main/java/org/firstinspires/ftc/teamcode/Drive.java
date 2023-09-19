@@ -52,7 +52,14 @@ public class Drive extends LinearOpMode {
   telemetry.update();
     waitForStart();
     while (opModeIsActive()) {
-      
+
+      // define the encoders for the motors
+      int MotorFLEncoder = MotorFL.getCurrentPosition();
+      int MotorFREncoder = MotorFR.getCurrentPosition();
+      int MotorBLEncoder = MotorBL.getCurrentPosition();
+      int MotorBREncoder = MotorBR.getCurrentPosition();
+
+
       MotorPowerLY1 = -this.gamepad1.left_stick_y / FBSpeed * TSpeed;
       MotorPowerLX1 = -this.gamepad1.left_stick_x / LRSpeed * TSpeed;
       MotorPowerRX1 = -this.gamepad1.right_stick_x / ROSpeed * TSpeed;
@@ -96,14 +103,18 @@ public class Drive extends LinearOpMode {
       MotorPowerLY1 = MotorPowerLY1 * BSpeed;
       
 
-      telemetry.addData("Status lx1", MotorPowerLX1);
-      telemetry.addData("Status ly1", MotorPowerLY1);
-      telemetry.addData("Status rx1", MotorPowerRX1);
-      telemetry.addData("Status ButtonX1", ButtonX1);
-      telemetry.addData("Status rightTrigger1", TriggerR21);
-      telemetry.addData("Status Mode1", ButtonOptions2);
-      telemetry.addData("Status Share1", ButtonShare2);
-      telemetry.addData("Status ModeToggle1", ModeToggle);
+      telemetry.addData("Status lx1: ", MotorPowerLX1);
+      telemetry.addData("Status ly1: ", MotorPowerLY1);
+      telemetry.addData("Status rx1: ", MotorPowerRX1);
+      telemetry.addData("Status ButtonX1: ", ButtonX1);
+      telemetry.addData("Status rightTrigger1: ", TriggerR21);
+      telemetry.addData("Status Mode1: ", ButtonOptions2);
+      telemetry.addData("Status Share1: ", ButtonShare2);
+      telemetry.addData("Status ModeToggle1: ", ModeToggle);
+      telemetry.addData("MotorFL encoder: ", MotorFLEncoder);
+      telemetry.addData("MotorFR encoder: ", MotorFREncoder);
+      telemetry.addData("MotorBL encoder: ", MotorBLEncoder);
+      telemetry.addData("MotorBR encoder: ", MotorBREncoder);
       //telemetry.addData("Status Touch", ButtonTouch);
       //telemetry.addData("Status lol", Arm1.getCurrentPosition());
       telemetry.update();
@@ -203,18 +214,18 @@ public class Drive extends LinearOpMode {
       
       // do not change unless you know what you are doing!!!
       if (TriggerL21 > 0) { // rotate left
-        MotorFL.setPower(TriggerL21);
-        MotorFR.setPower(TriggerL21);
-        MotorBL.setPower(TriggerL21);
-        MotorBR.setPower(TriggerL21);
+        MotorFL.setPower(-TriggerL21);
+        MotorFR.setPower(-TriggerL21);
+        MotorBL.setPower(-TriggerL21);
+        MotorBR.setPower(-TriggerL21);
       }
       
       // do not change unless you know what you are doing!!!
       if (TriggerR21 > 0) { // rotate right
-        MotorFL.setPower(-TriggerR21);
-        MotorFR.setPower(-TriggerR21);
-        MotorBL.setPower(-TriggerR21);
-        MotorBR.setPower(-TriggerR21);
+        MotorFL.setPower(TriggerR21);
+        MotorFR.setPower(TriggerR21);
+        MotorBL.setPower(TriggerR21);
+        MotorBR.setPower(TriggerR21);
       }
       
       // floor all of the motor movement values
