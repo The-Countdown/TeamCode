@@ -59,7 +59,7 @@ public class Drive extends LinearOpMode {
       int MotorBLEncoder = MotorBL.getCurrentPosition();
       int MotorBREncoder = MotorBR.getCurrentPosition();
 
-
+      // input for controller 1
       MotorPowerLY1 = -this.gamepad1.left_stick_y / FBSpeed * TSpeed;
       MotorPowerLX1 = -this.gamepad1.left_stick_x / LRSpeed * TSpeed;
       MotorPowerRX1 = -this.gamepad1.right_stick_x / ROSpeed * TSpeed;
