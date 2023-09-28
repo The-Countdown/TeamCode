@@ -15,6 +15,7 @@ public class Drive extends LinearOpMode {
   private DcMotor MotorFR; // this is the motor pluged into 1
   private DcMotor MotorBL; // this is the motor pluged into 2
   private DcMotor MotorBR; // this is the motor pluged into 3
+  private Servo servoTest;
   // private Servo ServoArm;
   // private Servo ServoClaw;
   // private DcMotor Arm1;
@@ -24,10 +25,11 @@ public class Drive extends LinearOpMode {
    */
   @Override
   public void runOpMode() {
-  MotorFL = hardwareMap.get(DcMotor.class, "MotorFL"); // this is the motor pluged into 0
+    MotorFL = hardwareMap.get(DcMotor.class, "MotorFL"); // this is the motor pluged into 0
   MotorFR = hardwareMap.get(DcMotor.class, "MotorFR"); // this is the motor pluged into 1
   MotorBL = hardwareMap.get(DcMotor.class, "MotorBL"); // this is the motor pluged into 2
   MotorBR = hardwareMap.get(DcMotor.class, "MotorBR"); // this is the motor pluged into 3
+    servoTest = hardwareMap.get(Servo.class, "ServoTest");
   
   telemetry.addData("Status", "Initialized");
         
@@ -138,11 +140,13 @@ public class Drive extends LinearOpMode {
       }
         
       if (ButtonB1) {
-        ModeToggle = true;
+        //ModeToggle = true;
+        servoTest.setPosition(0);
       }
       
       if (ButtonY1) {
-        ModeToggle = false;
+        //ModeToggle = false;
+        servoTest.setPosition(1);
       }
       
       if (ButtonRBump2) {
