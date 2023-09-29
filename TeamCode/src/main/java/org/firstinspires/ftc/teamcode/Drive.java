@@ -146,7 +146,7 @@ public class Drive extends LinearOpMode {
       
       if (ButtonY1) {
         //ModeToggle = false;
-        servoTest.setPosition(1);
+        servoTest.setPosition(0.5);
       }
       
       if (ButtonRBump2) {
