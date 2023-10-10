@@ -15,6 +15,8 @@ public class Drive extends LinearOpMode {
   private DcMotor MotorFR; // this is the motor pluged into 1
   private DcMotor MotorBL; // this is the motor pluged into 2
   private DcMotor MotorBR; // this is the motor pluged into 3
+  private DcMotor ArmL;
+  private DcMotor ArmR;
   private Servo servoTest;
   // private Servo ServoArm;
   // private Servo ServoClaw;
@@ -29,6 +31,8 @@ public class Drive extends LinearOpMode {
   MotorFR = hardwareMap.get(DcMotor.class, "MotorFR"); // this is the motor pluged into 1
   MotorBL = hardwareMap.get(DcMotor.class, "MotorBL"); // this is the motor pluged into 2
   MotorBR = hardwareMap.get(DcMotor.class, "MotorBR"); // this is the motor pluged into 3
+    ArmL = hardwareMap.get(DcMotor.class, "ArmL");
+    ArmR = hardwareMap.get(DcMotor.class, "ArmR");
     servoTest = hardwareMap.get(Servo.class, "ServoTest");
   
   telemetry.addData("Status", "Initialized");
@@ -37,6 +41,8 @@ public class Drive extends LinearOpMode {
   MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBL.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
+  ArmL.setDirection(DcMotorSimple.Direction.FORWARD);
+  ArmR.setDirection(DcMotorSimple.Direction.REVERSE);
  
   double TSpeed = 1;
   double BSpeed = 2;
@@ -141,12 +147,16 @@ public class Drive extends LinearOpMode {
         
       if (ButtonB1) {
         //ModeToggle = true;
-        servoTest.setPosition(0);
+        //servoTest.setPosition(0);
+        ArmL.setPower(0.5);
+        ArmR.setPower(0.5);
       }
       
       if (ButtonY1) {
         //ModeToggle = false;
-        servoTest.setPosition(0.5);
+        //servoTest.setPosition(0.5);
+        ArmL.setPower(-0.5);
+        ArmR.setPower(-0.5);
       }
       
       if (ButtonRBump2) {
@@ -237,6 +247,8 @@ public class Drive extends LinearOpMode {
       MotorFR.setPower(0);
       MotorBL.setPower(0);
       MotorBR.setPower(0);
+      ArmL.setPower(0);
+      ArmR.setPower(0);
       //Arm1.setPower(0);
       //Arm2.setPower(0);
     }
