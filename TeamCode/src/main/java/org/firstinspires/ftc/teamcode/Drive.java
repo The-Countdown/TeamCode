@@ -17,6 +17,10 @@ public class Drive extends LinearOpMode {
   private DcMotor MotorBR; // this is the motor pluged into 3
   private DcMotor ArmL;
   private DcMotor ArmR;
+  private DcMotor PullDownL;
+  private DcMotor PullDownR;
+  private Servo ClawArm;
+  private Servo ClawHand;
   private Servo servoTest;
   // private Servo ServoArm;
   // private Servo ServoClaw;
@@ -33,6 +37,10 @@ public class Drive extends LinearOpMode {
   MotorBR = hardwareMap.get(DcMotor.class, "MotorBR"); // this is the motor pluged into 3
     ArmL = hardwareMap.get(DcMotor.class, "ArmL");
     ArmR = hardwareMap.get(DcMotor.class, "ArmR");
+    PullDownL = hardwareMap.get(DcMotor.class, "PullDownL");
+    PullDownR = hardwareMap.get(DcMotor.class, "PullDownR");
+    ClawArm = hardwareMap.get(Servo.class, "ClawArm");
+    ClawHand = hardwareMap.get(Servo.class, "ClawHand");
     servoTest = hardwareMap.get(Servo.class, "ServoTest");
   
   telemetry.addData("Status", "Initialized");
@@ -42,8 +50,10 @@ public class Drive extends LinearOpMode {
   MotorBL.setDirection(DcMotorSimple.Direction.FORWARD);
   MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
   ArmL.setDirection(DcMotorSimple.Direction.FORWARD);
-  ArmR.setDirection(DcMotorSimple.Direction.REVERSE);
- 
+  ArmR.setDirection(DcMotorSimple.Direction.FORWARD);
+  PullDownL.setDirection(DcMotorSimple.Direction.FORWARD);
+  PullDownR.setDirection(DcMotorSimple.Direction.FORWARD);
+
   double TSpeed = 1;
   double BSpeed = 2;
   double FBSpeed = 1.5;
@@ -147,24 +157,48 @@ public class Drive extends LinearOpMode {
         
       if (ButtonB1) {
         //ModeToggle = true;
-        //servoTest.setPosition(0);
-        ArmL.setPower(0.5);
-        ArmR.setPower(0.5);
+        servoTest.setPosition(0);
+        //ArmL.setPower(0.5);
+        //ArmR.setPower(0.5);
       }
       
       if (ButtonY1) {
         //ModeToggle = false;
-        //servoTest.setPosition(0.5);
-        ArmL.setPower(-0.5);
-        ArmR.setPower(-0.5);
+        servoTest.setPosition(0.5);
+        //ArmL.setPower(-0.5);
+        //ArmR.setPower(-0.5);
+      }
+
+      if (ButtonB2) {
+        ClawArm.setPosition(0);
+      }
+
+      if (ButtonY2) {
+        ClawArm.setPosition(0.5);
+      }
+
+      if (ButtonA2) {
+        ClawHand.setPosition(0);
+      }
+
+      if (ButtonX2) {
+        ClawHand.setPosition(0.5);
       }
       
-      if (ButtonRBump2) {
+      if (ButtonRBump2) { // pulling that arm(linear slides) up!
         //Arm2.setPower(-1);
+        ArmL.setPower(-1);
+        ArmR.setPower(1);
+        PullDownL.setPower(-1);
+        PullDownR.setPower(1);
       }
       
-      if (ButtonLBump2) {
+      if (ButtonLBump2) { // pulling the arm(linear slides) down!
         //Arm2.setPower(1);
+        ArmL.setPower(1);
+        ArmR.setPower(-1);
+        PullDownL.setPower(1);
+        PullDownR.setPower(-1);
       }
       
       if (ButtonDPup2) {
@@ -249,6 +283,8 @@ public class Drive extends LinearOpMode {
       MotorBR.setPower(0);
       ArmL.setPower(0);
       ArmR.setPower(0);
+      PullDownL.setPower(0);
+      PullDownR.setPower(0);
       //Arm1.setPower(0);
       //Arm2.setPower(0);
     }
