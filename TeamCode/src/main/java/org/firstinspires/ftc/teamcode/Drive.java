@@ -170,7 +170,7 @@ public class Drive extends LinearOpMode {
       }
 
       if (ButtonB2) {
-        ClawArm.setPosition(0);
+        ClawArm.setPosition(0.15);
       }
 
       if (ButtonY2) {
@@ -182,7 +182,7 @@ public class Drive extends LinearOpMode {
       }
 
       if (ButtonX2) {
-        ClawHand.setPosition(0.5);
+        ClawHand.setPosition(0.4);
       }
       
       if (ButtonRBump2) { // pulling that arm(linear slides) up!
@@ -202,10 +202,14 @@ public class Drive extends LinearOpMode {
       }
       
       if (ButtonDPup2) {
+        PullDownL.setPower(1);
+        PullDownR.setPower(-1);
         //Arm1.setPower(1);
       }
       
       if (ButtonDPdown2) {
+        PullDownL.setPower(-1);
+        PullDownR.setPower(1);
         //Arm1.setPower(-1);
         
       }
@@ -232,7 +236,7 @@ public class Drive extends LinearOpMode {
       if (MotorPowerLY1 > -0) { // move forward
         MotorFL.setPower(MotorPowerLY1);
         MotorFR.setPower(-MotorPowerLY1);
-        MotorBL.setPower(MotorPowerLY1);
+        MotorBL.setPower(-MotorPowerLY1);
         MotorBR.setPower(-MotorPowerLY1);
       }
       
@@ -240,7 +244,7 @@ public class Drive extends LinearOpMode {
       if (MotorPowerLY1 < 0) { // move backword
         MotorFL.setPower(MotorPowerLY1);
         MotorFR.setPower(-MotorPowerLY1);
-        MotorBL.setPower(MotorPowerLY1);
+        MotorBL.setPower(-MotorPowerLY1);
         MotorBR.setPower(-MotorPowerLY1);
       }
       
@@ -248,7 +252,7 @@ public class Drive extends LinearOpMode {
       if (MotorPowerRX1 > 0) { // move left
         MotorFL.setPower(-MotorPowerRX1);
         MotorFR.setPower(-MotorPowerRX1);
-        MotorBL.setPower(MotorPowerRX1);
+        MotorBL.setPower(-MotorPowerRX1);
         MotorBR.setPower(MotorPowerRX1);
       }
       
@@ -256,7 +260,7 @@ public class Drive extends LinearOpMode {
       if (MotorPowerRX1 < -0) { // move right
         MotorFL.setPower(-MotorPowerRX1);
         MotorFR.setPower(-MotorPowerRX1);
-        MotorBL.setPower(MotorPowerRX1);
+        MotorBL.setPower(-MotorPowerRX1);
         MotorBR.setPower(MotorPowerRX1);
       }
       
@@ -264,7 +268,7 @@ public class Drive extends LinearOpMode {
       if (TriggerL21 > 0) { // rotate left
         MotorFL.setPower(-TriggerL21);
         MotorFR.setPower(-TriggerL21);
-        MotorBL.setPower(-TriggerL21);
+        MotorBL.setPower(TriggerL21);
         MotorBR.setPower(-TriggerL21);
       }
       
@@ -272,7 +276,7 @@ public class Drive extends LinearOpMode {
       if (TriggerR21 > 0) { // rotate right
         MotorFL.setPower(TriggerR21);
         MotorFR.setPower(TriggerR21);
-        MotorBL.setPower(TriggerR21);
+        MotorBL.setPower(-TriggerR21);
         MotorBR.setPower(TriggerR21);
       }
       
@@ -281,8 +285,8 @@ public class Drive extends LinearOpMode {
       MotorFR.setPower(0);
       MotorBL.setPower(0);
       MotorBR.setPower(0);
-      ArmL.setPower(0);
       ArmR.setPower(0);
+      ArmL.setPower(0);
       PullDownL.setPower(0);
       PullDownR.setPower(0);
       //Arm1.setPower(0);
