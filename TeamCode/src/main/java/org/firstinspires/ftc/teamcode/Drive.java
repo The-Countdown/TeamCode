@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "DriveMode")
+@TeleOp(name = "TeleOp")
 public class Drive extends LinearOpMode {
     // private TouchSensor Touch;
     private DcMotorEx MotorFL; // this is the motor pluged into 0
@@ -193,15 +193,15 @@ public class Drive extends LinearOpMode {
 
             if (ButtonRBump2) { // pulling that arm(linear slides) up!
                 //Arm2.setPower(-1);
-                ArmL.setVelocity(-5000);
-                ArmR.setVelocity(5000);
-                PullDownL.setVelocity(-5000);
-                PullDownR.setVelocity(5000);
+                ArmL.setVelocity(-3000);
+                ArmR.setVelocity(3000);
+                PullDownL.setVelocity(-3000);
+                PullDownR.setVelocity(3000);
             } else if (ButtonLBump2) {
-                ArmR.setVelocity(-5000);
-                ArmL.setVelocity(5000);
-                PullDownR.setVelocity(-5000);
-                PullDownL.setVelocity(5000);
+                ArmR.setVelocity(-3000);
+                ArmL.setVelocity(3000);
+                PullDownR.setVelocity(-3000);
+                PullDownL.setVelocity(3000);
             } else {
                 ArmR.setVelocity(0);
                 ArmL.setVelocity(0);
@@ -214,12 +214,13 @@ public class Drive extends LinearOpMode {
                 PullDownR.setPower(-1);
                 //Arm1.setPower(1);
             }
+            telemetry.addLine(toString().valueOf(ArmL.getVelocity()));
+            telemetry.addLine(toString().valueOf(ArmR.getVelocity()));
 
             if (ButtonDPdown2) {
                 PullDownL.setPower(-1);
                 PullDownR.setPower(1);
                 //Arm1.setPower(-1);
-
             }
 
 
