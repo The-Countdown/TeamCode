@@ -73,6 +73,12 @@ public class Drive extends LinearOpMode {
 
         boolean ModeToggle = false;
 
+        boolean armLock = false;
+        int arPos = 0;
+        int alPos = 0;
+        int pdrPos = 0;
+        int pdlPos = 0;
+
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
@@ -190,23 +196,52 @@ public class Drive extends LinearOpMode {
             if (ButtonX2) {
                 ClawHand.setPosition(0.4);
             }
-
-            if (ButtonRBump2) { // pulling that arm(linear slides) up!
-                //Arm2.setPower(-1);
-                ArmL.setVelocity(-3000);
-                ArmR.setVelocity(3000);
-                PullDownL.setVelocity(-3000);
-                PullDownR.setVelocity(3000);
-            } else if (ButtonLBump2) {
-                ArmR.setVelocity(-3000);
-                ArmL.setVelocity(3000);
-                PullDownR.setVelocity(-3000);
-                PullDownL.setVelocity(3000);
+            if (armLock == false) {
+                ArmL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                PullDownL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                if (ButtonRBump2) { // pulling that arm(linear slides) up!
+                    //Arm2.setPower(-1);
+                    ArmL.setVelocity(-2500);
+                    ArmR.setVelocity(2500);
+                    PullDownL.setVelocity(-2500);
+                    PullDownR.setVelocity(2500);
+                } else if (ButtonLBump2) {
+                    ArmR.setVelocity(-2500);
+                    ArmL.setVelocity(2500);
+                    PullDownR.setVelocity(-2500);
+                    PullDownL.setVelocity(2500);
+                } else {
+                    ArmR.setVelocity(0);
+                    ArmL.setVelocity(0);
+                    PullDownR.setVelocity(0);
+                    PullDownL.setVelocity(0);
+                }
             } else {
-                ArmR.setVelocity(0);
-                ArmL.setVelocity(0);
-                PullDownR.setVelocity(0);
-                PullDownL.setVelocity(0);
+                if (ArmR.getCurrentPosition() < arPos-1000) {
+                    ArmR.setVelocity(2500);
+                    ArmL.setVelocity(-2500);
+                    PullDownR.setVelocity(2500);
+                    PullDownL.setVelocity(-2500);
+                } else {
+                    ArmR.setVelocity(0);
+                    ArmL.setVelocity(0);
+                    PullDownR.setVelocity(0);
+                    PullDownL.setVelocity(0);
+                }
+            }
+
+            if (ButtonDPdown2 && armLock == false) {
+                armLock = true;
+                arPos = ArmR.getCurrentPosition();
+                alPos = ArmL.getCurrentPosition();
+                pdrPos = PullDownR.getCurrentPosition();
+                pdlPos = PullDownL.getCurrentPosition();
+
+            }
+            if (ButtonDPup2 && armLock == true) {
+                armLock = false;
             }
 
             if (ButtonDPup2) {
@@ -216,12 +251,16 @@ public class Drive extends LinearOpMode {
             }
             telemetry.addLine(toString().valueOf(ArmL.getVelocity()));
             telemetry.addLine(toString().valueOf(ArmR.getVelocity()));
-
-            if (ButtonDPdown2) {
-                PullDownL.setPower(-1);
-                PullDownR.setPower(1);
-                //Arm1.setPower(-1);
-            }
+            telemetry.addLine(toString().valueOf(arPos));
+            telemetry.addLine(toString().valueOf(alPos));
+            telemetry.addLine(toString().valueOf(pdrPos));
+            telemetry.addLine(toString().valueOf(pdlPos));
+            telemetry.addLine(toString().valueOf(armLock));
+//            if (ButtonDPdown2) {
+//                PullDownL.setPower(-1);
+//                PullDownR.setPower(1);
+//                //Arm1.setPower(-1);
+//            }
 
 
             if (ButtonDPleft2) {
