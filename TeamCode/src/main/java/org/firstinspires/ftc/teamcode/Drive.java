@@ -176,7 +176,7 @@ public class Drive extends LinearOpMode {
 
             if (ButtonY1) {
                 //ModeToggle = false;
-                servoTest.setPosition(0.5);
+                servoTest.setPosition(0.42);
                 //ArmL.setPower(-0.5);
                 //ArmR.setPower(-0.5);
             }
