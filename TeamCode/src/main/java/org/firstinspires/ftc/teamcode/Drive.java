@@ -186,7 +186,7 @@ public class Drive extends LinearOpMode {
             }
 
             if (ButtonY2) {
-                ClawArm.setPosition(0.5);
+                ClawArm.setPosition(0.4);
             }
 
             if (ButtonA2) {
