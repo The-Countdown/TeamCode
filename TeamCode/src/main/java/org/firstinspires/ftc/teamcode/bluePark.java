@@ -79,9 +79,16 @@ public class bluePark extends LinearOpMode {
         telemetry.update();
         waitForStart();
         runtime.reset();
-        while (runtime.seconds() < 3 && opModeIsActive()) {
-            MotorFR.setPower(0.3);
-            MotorBL.setPower(-0.3);
+        ClawHand.setPosition(0.1);
+        ClawArm.setPosition(0.15);
+
+        while (runtime.seconds() < 11 && opModeIsActive()) {
+            if (runtime.seconds() > 1 && runtime.seconds() < 10) {
+                MotorFL.setPower(0.3);
+                MotorBR.setPower(-0.3);
+            } else if (runtime.seconds() > 10){
+                ClawHand.setPosition(0.4);
+            }
         }
         MotorFR.setPower(0);
         MotorBL.setPower(0);

@@ -181,16 +181,16 @@ public class Drive extends LinearOpMode {
                 //ArmR.setPower(-0.5);
             }
 
-            if (ButtonB2) {
+            if (ButtonB2) { // raise the arm (I think)
                 ClawArm.setPosition(0.15);
             }
 
-            if (ButtonY2) {
+            if (ButtonY2) { // lower the arm (I think)
                 ClawArm.setPosition(0.4);
             }
 
             if (ButtonA2) {
-                ClawHand.setPosition(0);
+                ClawHand.setPosition(0.1);
             }
 
             if (ButtonX2) {
@@ -249,6 +249,7 @@ public class Drive extends LinearOpMode {
                 PullDownR.setPower(-1);
                 //Arm1.setPower(1);
             }
+
             telemetry.addLine(toString().valueOf(ArmL.getVelocity()));
             telemetry.addLine(toString().valueOf(ArmR.getVelocity()));
             telemetry.addLine(toString().valueOf(arPos));
