@@ -81,6 +81,7 @@ public class Drive extends LinearOpMode {
 
         telemetry.update();
         waitForStart();
+        servoTest.setPosition(0.42);
         while (opModeIsActive()) {
 
             // define the encoders for the motors
@@ -167,16 +168,11 @@ public class Drive extends LinearOpMode {
                 TriggerL21 = TriggerL21 / 2;
             }
 
-            if (ButtonB1) {
-                //ModeToggle = true;
-                servoTest.setPosition(0);
-                //ArmL.setPower(0.5);
-                //ArmR.setPower(0.5);
-            }
+
 
             if (ButtonY1) {
                 //ModeToggle = false;
-                servoTest.setPosition(0.42);
+                servoTest.setPosition(0.7);
                 //ArmL.setPower(-0.5);
                 //ArmR.setPower(-0.5);
             }
