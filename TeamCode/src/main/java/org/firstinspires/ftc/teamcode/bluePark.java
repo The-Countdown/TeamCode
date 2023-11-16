@@ -84,8 +84,8 @@ public class bluePark extends LinearOpMode {
 
         while (runtime.seconds() < 11 && opModeIsActive()) {
             if (runtime.seconds() > 1 && runtime.seconds() < 10) {
-                MotorFL.setPower(0.3);
-                MotorBR.setPower(-0.3);
+                MotorFL.setPower(-0.3);
+                MotorBR.setPower(0.3);
             } else if (runtime.seconds() > 10){
                 ClawHand.setPosition(0.4);
             }
