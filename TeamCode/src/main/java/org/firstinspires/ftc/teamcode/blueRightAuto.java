@@ -63,6 +63,11 @@ public class blueRightAuto extends LinearOpMode {
         MotorBR.setVelocity(0);
     }
 
+    public void resetEncoders() {
+        MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     @Override
     public void runOpMode() {
 
@@ -111,8 +116,7 @@ public class blueRightAuto extends LinearOpMode {
         if (opModeIsActive()) {
             telemetryTfod();
             telemetry.update();
-            MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 1830) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
@@ -122,8 +126,7 @@ public class blueRightAuto extends LinearOpMode {
             zeroMotors();
             telemetry.addData("rotations", toString().valueOf(MotorFL.getCurrentPosition()));
             telemetry.update();
-            MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 350) {
                 MotorFL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
@@ -141,15 +144,13 @@ public class blueRightAuto extends LinearOpMode {
             if (currentRecognitions.size() >= 1) {
                 pixelLocal = 2;
                 telemetry.update();
-                MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                resetEncoders();
                 while (opModeIsActive() && MotorFL.getCurrentPosition() > -350) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
-                MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                resetEncoders();
                 while (opModeIsActive() && MotorFL.getCurrentPosition() < 200) {
                     MotorFL.setVelocity(1000);
                     MotorFR.setVelocity(-1000);
@@ -165,11 +166,18 @@ public class blueRightAuto extends LinearOpMode {
             }
 
             if (pixelLocal == -1) {
-                MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                resetEncoders();
                 while (opModeIsActive() && MotorFL.getCurrentPosition() < 700) {
                     MotorFL.setVelocity(1000);
                     MotorBR.setVelocity(1000);
+                }
+                zeroMotors();
+                resetEncoders();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
+                    MotorFL.setVelocity(1000);
+                    MotorFR.setVelocity(-1000);
+                    MotorBL.setVelocity(-1000);
+                    MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
                 runtime.reset();
@@ -180,22 +188,6 @@ public class blueRightAuto extends LinearOpMode {
                 if (currentRecognitions.size() >= 1) {
                     pixelLocal = 1;
                     telemetry.update();
-                    MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
-                        MotorFL.setVelocity(1000);
-                        MotorBR.setVelocity(1000);
-                    }
-                    zeroMotors();
-                    MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
-                        MotorFL.setVelocity(1000);
-                        MotorFR.setVelocity(-1000);
-                        MotorBL.setVelocity(-1000);
-                        MotorBR.setVelocity(-1000);
-                    }
-                    zeroMotors();
                     ClawHand.setPosition(0.4);
                     runtime.reset();
                     while (opModeIsActive() && runtime.seconds() < 2) {
@@ -205,26 +197,19 @@ public class blueRightAuto extends LinearOpMode {
             }
             if (pixelLocal == -1) {
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 3) {
-                    MotorFL.setPower(-0.3);
-                    MotorBR.setPower(-0.3);
+                resetEncoders();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1900) {
+                    MotorFL.setVelocity(-1000);
+                    MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
                 pixelLocal = 3;
-                telemetry.update();
-                telemetry.update();
-                runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 0.5) {
-                    MotorFL.setPower(-0.3);
-                    MotorBR.setPower(-0.3);
-                }
-                zeroMotors();
-                runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 0.8) {
-                    MotorFL.setPower(0.2);
-                    MotorFR.setPower(-0.2);
-                    MotorBL.setPower(-0.2);
-                    MotorBR.setPower(-0.2);
+                resetEncoders();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 200) {
+                    MotorFL.setVelocity(1000);
+                    MotorFR.setVelocity(-1000);
+                    MotorBL.setVelocity(-1000);
+                    MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
                 ClawHand.setPosition(0.4);
