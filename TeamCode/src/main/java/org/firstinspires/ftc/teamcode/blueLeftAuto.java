@@ -23,8 +23,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.io.File;
 import java.util.List;
 
-@Autonomous(name = "Blue Right Auto")
-public class blueRightAuto extends LinearOpMode {
+@Autonomous(name = "Blue Left Auto")
+public class blueLeftAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -129,6 +129,7 @@ public class blueRightAuto extends LinearOpMode {
         ReadWriteFile.writeFile(calibrationFile, calibrationData.serialize());
 
         robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
 
         if (opModeIsActive()) {
             telemetryTfod();
@@ -235,8 +236,27 @@ public class blueRightAuto extends LinearOpMode {
                     ClawHand.setPosition(0.4);
                 }
             }
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 120) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            runtime.reset();
+            while (opModeIsActive() && runtime.seconds() > 2) {
+                ClawHand.setPosition(0.1);
+            }
+            robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            while (opModeIsActive() && robotOrientation.firstAngle < 89) {
+                robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                MotorFL.setVelocity(1000);
+                MotorBR.setVelocity(1000);
+            }
+            zeroMotors();
+
         }
         visionPortal.close();
+
     }
 
     /**
