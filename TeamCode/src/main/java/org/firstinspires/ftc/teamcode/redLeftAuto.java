@@ -1,30 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.io.File;
 import java.util.List;
 
-@Autonomous(name = "Blue Right Auto")
-public class blueRightAuto extends LinearOpMode {
+@Autonomous(name = "Red Left Auto")
+public class redLeftAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -37,8 +32,7 @@ public class blueRightAuto extends LinearOpMode {
     private Servo ClawArm;
     private Servo ClawHand;
     private Servo servoTest;
-    private BNO055IMU imu;
-    private Orientation robotOrientation;
+    private IMU imu;
     ElapsedTime runtime = new ElapsedTime();
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -84,15 +78,14 @@ public class blueRightAuto extends LinearOpMode {
         ClawHand = hardwareMap.get(Servo.class, "ClawHand");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(IMU.class, "imu");
 
-        BNO055IMU.Parameters imuParameters;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-        imuParameters = new BNO055IMU.Parameters();
-        imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imuParameters.loggingEnabled = false;
-        imu.initialize(imuParameters);
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         telemetry.addData("Status", "Initialized");
 
@@ -123,12 +116,6 @@ public class blueRightAuto extends LinearOpMode {
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
         waitForStart();
-
-        BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
-        File calibrationFile = AppUtil.getInstance().getSettingsFile("IMUCalibration.json");
-        ReadWriteFile.writeFile(calibrationFile, calibrationData.serialize());
-
-        robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         if (opModeIsActive()) {
             telemetryTfod();
@@ -189,14 +176,6 @@ public class blueRightAuto extends LinearOpMode {
                     MotorBR.setVelocity(1000);
                 }
                 zeroMotors();
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                }
-                zeroMotors();
                 runtime.reset();
                 while (opModeIsActive() && runtime.seconds() < 2) {
                     telemetryTfod();
@@ -205,6 +184,14 @@ public class blueRightAuto extends LinearOpMode {
                 if (currentRecognitions.size() >= 1) {
                     pixelLocal = 1;
                     telemetry.update();
+                    resetEncoders();
+                    while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
+                        MotorFL.setVelocity(1000);
+                        MotorFR.setVelocity(-1000);
+                        MotorBL.setVelocity(-1000);
+                        MotorBR.setVelocity(-1000);
+                    }
+                    zeroMotors();
                     ClawHand.setPosition(0.4);
                     runtime.reset();
                     while (opModeIsActive() && runtime.seconds() < 2) {

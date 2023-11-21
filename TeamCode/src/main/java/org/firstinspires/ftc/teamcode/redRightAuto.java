@@ -1,30 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.io.File;
 import java.util.List;
 
-@Autonomous(name = "Blue Left Auto")
-public class blueLeftAuto extends LinearOpMode {
+@Autonomous(name = "Red Right Auto")
+public class redRightAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -37,8 +34,7 @@ public class blueLeftAuto extends LinearOpMode {
     private Servo ClawArm;
     private Servo ClawHand;
     private Servo servoTest;
-    private BNO055IMU imu;
-    private Orientation robotOrientation;
+    private IMU imu;
     ElapsedTime runtime = new ElapsedTime();
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -84,15 +80,7 @@ public class blueLeftAuto extends LinearOpMode {
         ClawHand = hardwareMap.get(Servo.class, "ClawHand");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-
-        BNO055IMU.Parameters imuParameters;
-
-        imuParameters = new BNO055IMU.Parameters();
-        imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imuParameters.loggingEnabled = false;
-        imu.initialize(imuParameters);
+        imu = hardwareMap.get(IMU.class, "imu");
 
         telemetry.addData("Status", "Initialized");
 
@@ -124,12 +112,14 @@ public class blueLeftAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
-        File calibrationFile = AppUtil.getInstance().getSettingsFile("IMUCalibration.json");
-        ReadWriteFile.writeFile(calibrationFile, calibrationData.serialize());
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-        robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
         if (opModeIsActive()) {
             telemetryTfod();
@@ -190,14 +180,6 @@ public class blueLeftAuto extends LinearOpMode {
                     MotorBR.setVelocity(1000);
                 }
                 zeroMotors();
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                }
-                zeroMotors();
                 runtime.reset();
                 while (opModeIsActive() && runtime.seconds() < 2) {
                     telemetryTfod();
@@ -206,6 +188,14 @@ public class blueLeftAuto extends LinearOpMode {
                 if (currentRecognitions.size() >= 1) {
                     pixelLocal = 1;
                     telemetry.update();
+                    resetEncoders();
+                    while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
+                        MotorFL.setVelocity(1000);
+                        MotorFR.setVelocity(-1000);
+                        MotorBL.setVelocity(-1000);
+                        MotorBR.setVelocity(-1000);
+                    }
+                    zeroMotors();
                     ClawHand.setPosition(0.4);
                     runtime.reset();
                     while (opModeIsActive() && runtime.seconds() < 2) {
@@ -236,24 +226,48 @@ public class blueLeftAuto extends LinearOpMode {
                     ClawHand.setPosition(0.4);
                 }
             }
+
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 120) {
+            while (ArmR.getCurrentPosition() < 300) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
             runtime.reset();
-            while (opModeIsActive() && runtime.seconds() > 2) {
+            while (opModeIsActive() && runtime.seconds() < 2) {
                 ClawHand.setPosition(0.1);
             }
-            robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            while (opModeIsActive() && robotOrientation.firstAngle < 89) {
-                robotOrientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                MotorFL.setVelocity(1000);
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 200) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
+            resetEncoders();
+            int count = -200;
+            if (pixelLocal == 1) {
+                count = -100;
+            }
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > count) {
+                MotorFL.setVelocity(-1000);
+                MotorFR.setVelocity(1000);
+                MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
             }
             zeroMotors();
-
+            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
+            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES)));
+            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getRoll(AngleUnit.DEGREES)));
+            while (opModeIsActive() && imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < 89) {
+                MotorFL.setVelocity(1000);
+                MotorBR.setVelocity(1000);
+                telemetry.update();
+            }
+            zeroMotors();
         }
         visionPortal.close();
 
