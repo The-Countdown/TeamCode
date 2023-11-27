@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,13 +11,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-import java.io.File;
 import java.util.List;
 
 @Autonomous(name = "Red Right Auto")
@@ -34,19 +33,12 @@ public class redRightAuto extends LinearOpMode {
     private Servo ClawArm;
     private Servo ClawHand;
     private Servo servoTest;
-    private IMU imu;
+    private ColorSensor col;
     ElapsedTime runtime = new ElapsedTime();
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
-    /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
-     */
     private TfodProcessor tfod;
-
-    /**
-     * The variable to store our instance of the vision portal.
-     */
+    private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
     public void zeroMotors() {
@@ -79,8 +71,7 @@ public class redRightAuto extends LinearOpMode {
         ClawArm = hardwareMap.get(Servo.class, "ClawArm");
         ClawHand = hardwareMap.get(Servo.class, "ClawHand");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
-
-        imu = hardwareMap.get(IMU.class, "imu");
+        col = hardwareMap.get(ColorSensor.class, "col");
 
         telemetry.addData("Status", "Initialized");
 
@@ -112,15 +103,6 @@ public class redRightAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-
         if (opModeIsActive()) {
             telemetryTfod();
             telemetry.update();
@@ -135,7 +117,7 @@ public class redRightAuto extends LinearOpMode {
             telemetry.addData("rotations", toString().valueOf(MotorFL.getCurrentPosition()));
             telemetry.update();
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 350) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
                 MotorFL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
             }
@@ -153,7 +135,7 @@ public class redRightAuto extends LinearOpMode {
                 pixelLocal = 2;
                 telemetry.update();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -350) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
@@ -186,7 +168,7 @@ public class redRightAuto extends LinearOpMode {
                 }
                 currentRecognitions = tfod.getRecognitions();
                 if (currentRecognitions.size() >= 1) {
-                    pixelLocal = 1;
+                    pixelLocal = 3;
                     telemetry.update();
                     resetEncoders();
                     while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
@@ -206,14 +188,14 @@ public class redRightAuto extends LinearOpMode {
             if (pixelLocal == -1) {
                 runtime.reset();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1900) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1950) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
-                pixelLocal = 3;
+                pixelLocal = 1;
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 200) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
                     MotorFL.setVelocity(1000);
                     MotorFR.setVelocity(-1000);
                     MotorBL.setVelocity(-1000);
@@ -229,7 +211,7 @@ public class redRightAuto extends LinearOpMode {
 
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 300) {
+            while (ArmR.getCurrentPosition() < 175) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
@@ -241,17 +223,20 @@ public class redRightAuto extends LinearOpMode {
             }
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 200) {
+            while (ArmR.getCurrentPosition() < 400) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-            resetEncoders();
             int count = -200;
             if (pixelLocal == 1) {
+                count = -300;
+            }
+            if (pixelLocal == 3) {
                 count = -100;
             }
+            resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() > count) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
@@ -259,18 +244,70 @@ public class redRightAuto extends LinearOpMode {
                 MotorBR.setVelocity(1000);
             }
             zeroMotors();
-            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
-            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES)));
-            telemetry.addLine(toString().valueOf(imu.getRobotYawPitchRollAngles().getRoll(AngleUnit.DEGREES)));
-            while (opModeIsActive() && imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < 89) {
+            count = 1350;
+            if (pixelLocal == 1) {
+                count = 2200;
+            }
+            if (pixelLocal == 3) {
+                count = 200;
+            }
+            resetEncoders();
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < count) {
                 MotorFL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
                 telemetry.update();
             }
             zeroMotors();
+            telemetry.addData("color", toString().valueOf(col.red()));
+            runtime.reset();
+            while (opModeIsActive() && runtime.seconds() < 0.3) {
+                MotorFL.setVelocity(1000);
+                MotorFR.setVelocity(-1000);
+                MotorBL.setVelocity(-1000);
+                MotorBR.setVelocity(-1000);
+                telemetry.update();
+            }
+            while (opModeIsActive() && col.red() < 500) {
+                MotorFL.setVelocity(1000);
+                MotorFR.setVelocity(-1000);
+                MotorBL.setVelocity(-1000);
+                MotorBR.setVelocity(-1000);
+                telemetry.update();
+            }
+            resetEncoders();
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > 500) {
+                MotorFL.setVelocity(-1000);
+                MotorFR.setVelocity(1000);
+                MotorBL.setVelocity(1000);
+                MotorBR.setVelocity(1000);
+                telemetry.update();
+            }
+            zeroMotors();
+            visionPortal.close();
+            initAprilTag();
+            visionPortal.resumeStreaming();
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            boolean found = false;
+            //strafe code
+            while (true) {
+                for (AprilTagDetection detection : currentDetections) {
+                    if (detection.id == pixelLocal + 3) {
+                        found = true;
+                    } else {
+                        found = false;
+                    }
+                    if (found) {
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
+                }
+                currentDetections = aprilTag.getDetections();
+            }
+            zeroMotors();
+            //place pixel code
         }
-        visionPortal.close();
-
     }
 
     /**
@@ -312,5 +349,47 @@ public class redRightAuto extends LinearOpMode {
         }   // end for() loop
 
     }   // end method telemetryTfod()
+
+    private void initAprilTag() {
+
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        if (USE_WEBCAM) {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        } else {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    BuiltinCameraDirection.BACK, aprilTag);
+        }
+
+    }   // end method initAprilTag()
+
+    /**
+     * Add telemetry about AprilTag detections.
+     */
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
+
+        // Add "key" information to telemetry
+        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+    }   // end method telemetryAprilTag()
 
 }   // end class
