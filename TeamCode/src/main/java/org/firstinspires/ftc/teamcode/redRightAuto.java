@@ -103,6 +103,21 @@ public class redRightAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        while (opModeIsActive()) {
+            if (gamepad1.a) {
+                visionPortal.close();
+                sleep(50);
+                initAprilTag();
+                visionPortal.resumeStreaming();
+            }
+            if (gamepad1.b) {
+                visionPortal.close();
+                sleep(50);
+                initTfod();
+                visionPortal.resumeStreaming();
+            }
+        }
+
         if (opModeIsActive()) {
             telemetryTfod();
             telemetry.update();
@@ -328,10 +343,6 @@ public class redRightAuto extends LinearOpMode {
         }
 
     }   // end method initTfod()
-
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
     private void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
