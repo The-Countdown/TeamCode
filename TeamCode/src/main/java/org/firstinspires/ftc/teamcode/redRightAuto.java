@@ -295,7 +295,7 @@ public class redRightAuto extends LinearOpMode {
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-            int count = -200;
+            int count = -100;
             if (pixelLocal == 1) {
                 count = -300;
             }
@@ -334,7 +334,6 @@ public class redRightAuto extends LinearOpMode {
             }
 
             zeroMotors();
-            visionPortal.close();
             runtime.reset();
             while (opModeIsActive() && runtime.seconds() < 1) {
                 MotorFL.setVelocity(1000);
@@ -343,8 +342,6 @@ public class redRightAuto extends LinearOpMode {
                 MotorBR.setVelocity(-1000);
                 telemetry.update();
             }
-            initAprilTag();
-            visionPortal.resumeStreaming();
             resetEncoders();
             while (opModeIsActive() && col.red() < 500 && MotorFL.getCurrentPosition() < 2100 || MotorFL.getCurrentPosition() < 1400) {
                 MotorFL.setVelocity(1000);
@@ -382,6 +379,18 @@ public class redRightAuto extends LinearOpMode {
                 }
             }
             currentDetections = aprilTag.getDetections();
+            runtime.reset();
+            while (opModeIsActive() && currentDetections.size() != 0 || runtime.seconds() < 0.5) {
+                MotorFL.setVelocity(-600);
+                MotorFR.setVelocity(-600);
+                MotorBL.setVelocity(-600);
+                MotorBR.setVelocity(600);
+                currentDetections = aprilTag.getDetections();
+                if (currentDetections.size() != 0) {
+                    runtime.reset();
+                }
+            }
+            zeroMotors();
             found = false;
             if (pixelLocal != 1) {
                 MotorFL.setVelocity(300);
@@ -408,21 +417,11 @@ public class redRightAuto extends LinearOpMode {
             }
             ClawArm.setPosition(0.15);
             resetEncoders();
-            if (pixelLocal == 1) {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
-                    MotorFL.setVelocity(-1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(1000);
-                    telemetry.update();
-                }
-            } else {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 50) {
-                    MotorFL.setVelocity(300);
-                    MotorFR.setVelocity(300);
-                    MotorBL.setVelocity(300);
-                    MotorBR.setVelocity(-300);
-                }
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 50) {
+                MotorFL.setVelocity(300);
+                MotorFR.setVelocity(300);
+                MotorBL.setVelocity(300);
+                MotorBR.setVelocity(-300);
             }
             zeroMotors();
             resetEncoders();
@@ -435,7 +434,7 @@ public class redRightAuto extends LinearOpMode {
                 telemetry.update();
             }
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 400) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);

@@ -208,7 +208,7 @@ public class blueLeftAuto extends LinearOpMode {
 
             if (pixelLocal == -1) {
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -80) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -800) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
@@ -235,6 +235,14 @@ public class blueLeftAuto extends LinearOpMode {
                 if (found) {
                     pixelLocal = 1;
                     telemetry.update();
+                    robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                    while (opModeIsActive() && robotOrientation.firstAngle < 60) {
+                        MotorFL.setVelocity(-1000);
+                        MotorBR.setVelocity(-1000);
+                        robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                        telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
+                        telemetry.update();
+                    }
                     resetEncoders();
                     while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
                         MotorFL.setVelocity(1000);
@@ -294,7 +302,7 @@ public class blueLeftAuto extends LinearOpMode {
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-            int count = -200;
+            int count = -100;
             if (pixelLocal == 1) {
                 count = -100;
             }
@@ -333,7 +341,6 @@ public class blueLeftAuto extends LinearOpMode {
             }
 
             zeroMotors();
-            visionPortal.close();
             runtime.reset();
             while (opModeIsActive() && runtime.seconds() < 1) {
                 MotorFL.setVelocity(1000);
@@ -342,8 +349,6 @@ public class blueLeftAuto extends LinearOpMode {
                 MotorBR.setVelocity(-1000);
                 telemetry.update();
             }
-            initAprilTag();
-            visionPortal.resumeStreaming();
             resetEncoders();
             while (opModeIsActive() && col.blue() < 800 && MotorFL.getCurrentPosition() < 2100 || MotorFL.getCurrentPosition() < 1400) {
                 MotorFL.setVelocity(1000);
@@ -381,6 +386,18 @@ public class blueLeftAuto extends LinearOpMode {
                 }
             }
             currentDetections = aprilTag.getDetections();
+            runtime.reset();
+            while (opModeIsActive() && currentDetections.size() != 0 || runtime.seconds() < 0.5) {
+                MotorFL.setVelocity(-600);
+                MotorFR.setVelocity(-600);
+                MotorBL.setVelocity(-600);
+                MotorBR.setVelocity(600);
+                currentDetections = aprilTag.getDetections();
+                if (currentDetections.size() != 0) {
+                    runtime.reset();
+                }
+            }
+            zeroMotors();
             found = false;
             if (pixelLocal != 1) {
                 MotorFL.setVelocity(300);
@@ -407,21 +424,11 @@ public class blueLeftAuto extends LinearOpMode {
             }
             ClawArm.setPosition(0.15);
             resetEncoders();
-            if (pixelLocal == 1) {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
-                    MotorFL.setVelocity(-1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(1000);
-                    telemetry.update();
-                }
-            } else {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 50) {
-                    MotorFL.setVelocity(300);
-                    MotorFR.setVelocity(300);
-                    MotorBL.setVelocity(300);
-                    MotorBR.setVelocity(-300);
-                }
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 50) {
+                MotorFL.setVelocity(300);
+                MotorFR.setVelocity(300);
+                MotorBL.setVelocity(300);
+                MotorBR.setVelocity(-300);
             }
             zeroMotors();
             resetEncoders();
@@ -434,7 +441,7 @@ public class blueLeftAuto extends LinearOpMode {
                 telemetry.update();
             }
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 400) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
