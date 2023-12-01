@@ -13,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.io.File;
@@ -41,10 +43,8 @@ public class redLeftAuto extends LinearOpMode {
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
+    private AprilTagProcessor aprilTag;
 
-    /**
-     * The variable to store our instance of the vision portal.
-     */
     private VisionPortal visionPortal;
 
     public void zeroMotors() {
@@ -109,7 +109,7 @@ public class redLeftAuto extends LinearOpMode {
 
         short pixelLocal = -1;
 
-        initTfod();
+        initAprilTag();
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -118,7 +118,6 @@ public class redLeftAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            telemetryTfod();
             telemetry.update();
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 1830) {
@@ -131,7 +130,7 @@ public class redLeftAuto extends LinearOpMode {
             telemetry.addData("rotations", toString().valueOf(MotorFL.getCurrentPosition()));
             telemetry.update();
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 350) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
                 MotorFL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
             }
@@ -139,17 +138,29 @@ public class redLeftAuto extends LinearOpMode {
             telemetry.update();
             visionPortal.resumeStreaming();
             runtime.reset();
-            while (opModeIsActive() && runtime.seconds() < 2) {
-                telemetryTfod();
+            boolean found = false;
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            while (opModeIsActive() && runtime.seconds() < 1) {
+                for (AprilTagDetection detection : currentDetections) {
+                    if (detection.id == 21) {
+                        found = true;
+                    } else {
+                        found = false;
+                    }
+                    if (found) {
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
+                }
+                currentDetections = aprilTag.getDetections();
             }
-            telemetry.addData("pixel local", toString().valueOf(pixelLocal));
-            telemetry.update();
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
-            if (currentRecognitions.size() >= 1) {
+            if (found) {
                 pixelLocal = 2;
                 telemetry.update();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -350) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
@@ -171,18 +182,32 @@ public class redLeftAuto extends LinearOpMode {
 
             if (pixelLocal == -1) {
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 700) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 800) {
                     MotorFL.setVelocity(1000);
                     MotorBR.setVelocity(1000);
                 }
                 zeroMotors();
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 2) {
-                    telemetryTfod();
+                found = false;
+                currentDetections = aprilTag.getDetections();
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    for (AprilTagDetection detection : currentDetections) {
+                        if (detection.id == 21) {
+                            found = true;
+                        } else {
+                            found = false;
+                        }
+                        if (found) {
+                            break;
+                        }
+                    }
+                    if (found) {
+                        break;
+                    }
+                    currentDetections = aprilTag.getDetections();
                 }
-                currentRecognitions = tfod.getRecognitions();
-                if (currentRecognitions.size() >= 1) {
-                    pixelLocal = 1;
+                if (found) {
+                    pixelLocal = 3;
                     telemetry.update();
                     resetEncoders();
                     while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
@@ -202,14 +227,14 @@ public class redLeftAuto extends LinearOpMode {
             if (pixelLocal == -1) {
                 runtime.reset();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1900) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1950) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
-                pixelLocal = 3;
+                pixelLocal = 1;
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 200) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
                     MotorFL.setVelocity(1000);
                     MotorFR.setVelocity(-1000);
                     MotorBL.setVelocity(-1000);
@@ -222,6 +247,27 @@ public class redLeftAuto extends LinearOpMode {
                     ClawHand.setPosition(0.4);
                 }
             }
+
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 200) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
+            runtime.reset();
+            while (opModeIsActive() && runtime.seconds() < 2) {
+                ClawHand.setPosition(0.1);
+            }
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 300) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
         }
         visionPortal.close();
     }
@@ -265,5 +311,47 @@ public class redLeftAuto extends LinearOpMode {
         }   // end for() loop
 
     }   // end method telemetryTfod()
+
+    private void initAprilTag() {
+
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        if (USE_WEBCAM) {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        } else {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    BuiltinCameraDirection.BACK, aprilTag);
+        }
+
+    }   // end method initAprilTag()
+
+    /**
+     * Add telemetry about AprilTag detections.
+     */
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
+
+        // Add "key" information to telemetry
+        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+    }   // end method telemetryAprilTag()
 
 }   // end class

@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -27,8 +26,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Red Right Auto")
-public class redRightAuto extends LinearOpMode {
+@Autonomous(name = "Blue Left Auto")
+public class blueLeftAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -209,9 +208,9 @@ public class redRightAuto extends LinearOpMode {
 
             if (pixelLocal == -1) {
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 800) {
-                    MotorFL.setVelocity(1000);
-                    MotorBR.setVelocity(1000);
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -80) {
+                    MotorFL.setVelocity(-1000);
+                    MotorBR.setVelocity(-1000);
                 }
                 zeroMotors();
                 runtime.reset();
@@ -234,7 +233,7 @@ public class redRightAuto extends LinearOpMode {
                     currentDetections = aprilTag.getDetections();
                 }
                 if (found) {
-                    pixelLocal = 3;
+                    pixelLocal = 1;
                     telemetry.update();
                     resetEncoders();
                     while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
@@ -254,12 +253,12 @@ public class redRightAuto extends LinearOpMode {
             if (pixelLocal == -1) {
                 runtime.reset();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1950) {
-                    MotorFL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 1950) {
+                    MotorFL.setVelocity(1000);
+                    MotorBR.setVelocity(1000);
                 }
                 zeroMotors();
-                pixelLocal = 1;
+                pixelLocal = 3;
                 resetEncoders();
                 while (opModeIsActive() && MotorFL.getCurrentPosition() < 300) {
                     MotorFL.setVelocity(1000);
@@ -297,10 +296,10 @@ public class redRightAuto extends LinearOpMode {
             ArmR.setVelocity(0);
             int count = -200;
             if (pixelLocal == 1) {
-                count = -300;
+                count = -100;
             }
             if (pixelLocal == 3) {
-                count = -100;
+                count = -300;
             }
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() > count) {
@@ -325,9 +324,9 @@ public class redRightAuto extends LinearOpMode {
 //            }
 
             robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            while (opModeIsActive() && robotOrientation.firstAngle > -80) {
-                MotorFL.setVelocity(1000);
-                MotorBR.setVelocity(1000);
+            while (opModeIsActive() && robotOrientation.firstAngle < 80) {
+                MotorFL.setVelocity(-1000);
+                MotorBR.setVelocity(-1000);
                 robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
                 telemetry.update();
@@ -346,12 +345,12 @@ public class redRightAuto extends LinearOpMode {
             initAprilTag();
             visionPortal.resumeStreaming();
             resetEncoders();
-            while (opModeIsActive() && col.red() < 500 && MotorFL.getCurrentPosition() < 2100 || MotorFL.getCurrentPosition() < 1400) {
+            while (opModeIsActive() && col.blue() < 800 && MotorFL.getCurrentPosition() < 2100 || MotorFL.getCurrentPosition() < 1400) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
                 MotorBR.setVelocity(-1000);
-                telemetry.addData("color", toString().valueOf(col.red()));
+                telemetry.addData("color", toString().valueOf(col.blue()));
                 telemetry.update();
             }
             resetEncoders();
@@ -364,18 +363,18 @@ public class redRightAuto extends LinearOpMode {
             }
             zeroMotors();
             robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            while (opModeIsActive() && robotOrientation.firstAngle > -87) {
-                MotorFL.setVelocity(300);
-                MotorBR.setVelocity(300);
+            while (opModeIsActive() && robotOrientation.firstAngle < 87) {
+                MotorFL.setVelocity(-300);
+                MotorBR.setVelocity(-300);
                 robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
                 telemetry.update();
             }
             robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            if (robotOrientation.firstAngle < -100) {
-                while (opModeIsActive() && robotOrientation.firstAngle < -93) {
-                    MotorFL.setVelocity(-300);
-                    MotorBR.setVelocity(-300);
+            if (robotOrientation.firstAngle > 100) {
+                while (opModeIsActive() && robotOrientation.firstAngle > 93) {
+                    MotorFL.setVelocity(300);
+                    MotorBR.setVelocity(300);
                     robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                     telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
                     telemetry.update();
@@ -390,7 +389,7 @@ public class redRightAuto extends LinearOpMode {
                 MotorBR.setVelocity(-300);
                 while (true) {
                     for (AprilTagDetection detection : currentDetections) {
-                        if (detection.id == pixelLocal + 3) {
+                        if (detection.id == pixelLocal) {
                             found = true;
                         } else {
                             found = false;
@@ -426,12 +425,12 @@ public class redRightAuto extends LinearOpMode {
             }
             zeroMotors();
             resetEncoders();
-            while (opModeIsActive() && col.red() < 500 && MotorFL.getCurrentPosition() < 200) {
+            while (opModeIsActive() && col.blue() < 800 && MotorFL.getCurrentPosition() < 200) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
                 MotorBR.setVelocity(-1000);
-                telemetry.addData("color", toString().valueOf(col.red()));
+                telemetry.addData("color", toString().valueOf(col.blue()));
                 telemetry.update();
             }
             resetEncoders();
