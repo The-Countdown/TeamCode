@@ -187,16 +187,20 @@ public class Drive extends LinearOpMode {
                 ClawArm.setPosition(0.4);
             }
 
-            if (ButtonDPdown2) {
+            if (ButtonDPup2) {
                 ClawArm.setPosition(0);
             }
 
-            if (ButtonDPleft2) {
-                PlaneAngle.setPosition(0);
+            if (ButtonDPleft2) { // launching plane
+                PlaneAngle.setPosition(0.3);
             }
 
-            if (ButtonDPright2) {
-                PlaneAngle.setPosition(0.2);
+            if (ButtonDPdown2) { // starting position
+                PlaneAngle.setPosition(0.5);
+            }
+
+            if (ButtonDPright2) { // handing
+                PlaneAngle.setPosition(0.8);
             }
 
             if (ButtonA2) {
