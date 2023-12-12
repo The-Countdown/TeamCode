@@ -192,7 +192,7 @@ public class Drive extends LinearOpMode {
             }
 
             if (ButtonDPleft2) { // launching plane
-                PlaneAngle.setPosition(0.3);
+                PlaneAngle.setPosition(0.4);
             }
 
             if (ButtonDPdown2) { // starting position
