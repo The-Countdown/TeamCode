@@ -165,11 +165,13 @@ public class BlueBackboardAuto extends LinearOpMode {
             boolean FoundRight = false;
             // go forward more while looking at the distance value
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 600) { // go forward some distance
-                if (LeftDistance.getDistance(DistanceUnit.MM) < 300) {
+                if (LeftDistance.getDistance(DistanceUnit.MM) < 250) {
                     FoundLeft = true;
+                    break;
                 }
-                if (RightDistance.getDistance(DistanceUnit.MM) < 300) {
+                if (RightDistance.getDistance(DistanceUnit.MM) < 250) {
                     FoundRight = true;
+                    break;
                 }
                 telemetry.addData("FoundLeft", FoundLeft);
                 telemetry.addData("FoundRight", FoundRight);
@@ -204,12 +206,7 @@ public class BlueBackboardAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                telemetry.addData("Color:", Color.blue());
-                telemetry.update();
-                sleep(3000);
-                while (opModeIsActive() && Color.blue() < 1300) {
-                    telemetry.addData("Color:", Color.blue());
-                    telemetry.update();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() < 160) {
                     MotorFL.setVelocity(1000);
                     MotorFR.setVelocity(-1000);
                     MotorBL.setVelocity(-1000);
@@ -217,12 +214,6 @@ public class BlueBackboardAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -180) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                }
                 zeroMotors();
                 resetEncoders();
                 ClawHand.setPosition(0.4);
@@ -305,12 +296,15 @@ public class BlueBackboardAuto extends LinearOpMode {
             zeroMotors();
             resetEncoders();
             if (FoundLeft) {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -240) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -160) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
                     MotorBR.setVelocity(1000);
                 }
+                zeroMotors();
+                resetEncoders();
+                // move left
             }
 
 
