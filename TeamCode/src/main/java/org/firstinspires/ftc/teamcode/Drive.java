@@ -24,6 +24,7 @@ public class Drive extends LinearOpMode {
     private Servo ClawArm;
     private Servo ClawHand;
     private Servo servoTest;
+    private Servo PlaneAngle;
     // private Servo ServoArm;
     // private Servo ServoClaw;
     // private DcMotor Arm1;
@@ -44,6 +45,7 @@ public class Drive extends LinearOpMode {
         ClawArm = hardwareMap.get(Servo.class, "ClawArm");
         ClawHand = hardwareMap.get(Servo.class, "ClawHand");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
+        PlaneAngle = hardwareMap.get(Servo.class, "PlaneAngle");
 
         telemetry.addData("Status", "Initialized");
 
@@ -183,6 +185,22 @@ public class Drive extends LinearOpMode {
 
             if (ButtonY2) { // lower the arm (I think)
                 ClawArm.setPosition(0.4);
+            }
+
+            if (ButtonDPup2) {
+                ClawArm.setPosition(0);
+            }
+
+            if (ButtonDPleft2) { // launching plane
+                PlaneAngle.setPosition(0.4);
+            }
+
+            if (ButtonDPdown2) { // starting position
+                PlaneAngle.setPosition(0.5);
+            }
+
+            if (ButtonDPright2) { // handing
+                PlaneAngle.setPosition(0.8);
             }
 
             if (ButtonA2) {
