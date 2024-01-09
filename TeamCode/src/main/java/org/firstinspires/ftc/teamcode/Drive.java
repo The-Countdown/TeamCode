@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name = "TeleOp")
 public class Drive extends LinearOpMode {
@@ -25,6 +28,7 @@ public class Drive extends LinearOpMode {
     private Servo ClawHand;
     private Servo servoTest;
     private Servo PlaneAngle;
+    private ColorSensor Color;
     // private Servo ServoArm;
     // private Servo ServoClaw;
     // private DcMotor Arm1;
@@ -46,6 +50,7 @@ public class Drive extends LinearOpMode {
         ClawHand = hardwareMap.get(Servo.class, "ClawHand");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
         PlaneAngle = hardwareMap.get(Servo.class, "PlaneAngle");
+        Color = hardwareMap.get(ColorSensor.class, "col");
 
         telemetry.addData("Status", "Initialized");
 
@@ -148,6 +153,9 @@ public class Drive extends LinearOpMode {
             telemetry.addData("MotorFR encoder: ", MotorFREncoder);
             telemetry.addData("MotorBL encoder: ", MotorBLEncoder);
             telemetry.addData("MotorBR encoder: ", MotorBREncoder);
+            telemetry.addData("Color Red:", Color.red());
+            telemetry.addData("Color Blue:", Color.blue());
+            telemetry.addData("Color Green:", Color.green());
             //telemetry.addData("Status Touch", ButtonTouch);
             //telemetry.addData("Status lol", Arm1.getCurrentPosition());
             telemetry.update();
