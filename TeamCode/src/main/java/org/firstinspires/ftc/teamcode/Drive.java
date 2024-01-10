@@ -88,7 +88,7 @@ public class Drive extends LinearOpMode {
 
         telemetry.update();
         waitForStart();
-        servoTest.setPosition(0.42);
+        servoTest.setPosition(0.7);
         while (opModeIsActive()) {
 
             // define the encoders for the motors
@@ -170,19 +170,17 @@ public class Drive extends LinearOpMode {
                 MotorPowerLY1 = 1;
             }
 
-            if (ModeToggle) { // slow the robot movement down
-                MotorPowerRX1 = MotorPowerRX1 / 1.5;
-                MotorPowerLX1 = MotorPowerLX1 / 1.5;
-                MotorPowerLY1 = MotorPowerLY1 / 1.5;
-                TriggerR21 = TriggerR21 / 2;
-                TriggerL21 = TriggerL21 / 2;
-            }
+            MotorPowerRX1 = MotorPowerRX1 / 1.5;
+            MotorPowerLX1 = MotorPowerLX1 / 1.5;
+            MotorPowerLY1 = MotorPowerLY1 / 1.5;
+            TriggerR21 = TriggerR21 / 2;
+            TriggerL21 = TriggerL21 / 2;
 
 
 
-            if (ButtonY1) {
+            if (ButtonY1) { // launch plane
                 //ModeToggle = false;
-                servoTest.setPosition(0.7);
+                servoTest.setPosition(0.42);
                 //ArmL.setPower(-0.5);
                 //ArmR.setPower(-0.5);
             }
@@ -197,18 +195,6 @@ public class Drive extends LinearOpMode {
 
             if (ButtonDPup2) {
                 ClawArm.setPosition(0);
-            }
-
-            if (ButtonDPleft2) { // launching plane
-                PlaneAngle.setPosition(0.4);
-            }
-
-            if (ButtonDPdown2) { // starting position
-                PlaneAngle.setPosition(0.5);
-            }
-
-            if (ButtonDPright2) { // handing
-                PlaneAngle.setPosition(0.8);
             }
 
             if (ButtonA2) {
@@ -285,79 +271,49 @@ public class Drive extends LinearOpMode {
 //                //Arm1.setPower(-1);
 //            }
 
-
-            if (ButtonDPleft2) {
-                //ervoArm.setPosition(0);
-            }
-
-            if (ButtonDPright2) {
-                //ServoArm.setPosition(1);
-
-            }
-
-            if (ButtonA2) {
-                //ServoClaw.setPosition(1);
-            }
-
-            if (ButtonX2) {
-                //ServoClaw.setPosition(0);
-            }
-
             // do not change unless you know what you are doing!!!
             if (MotorPowerLY1 > -0) { // move forward
                 MotorFL.setPower(MotorPowerLY1);
                 MotorFR.setPower(-MotorPowerLY1);
                 MotorBL.setPower(-MotorPowerLY1);
                 MotorBR.setPower(-MotorPowerLY1);
-            }
-
             // do not change unless you know what you are doing!!!
-            if (MotorPowerLY1 < 0) { // move backword
+            } else if (MotorPowerLY1 < 0) { // move backwords
                 MotorFL.setPower(MotorPowerLY1);
                 MotorFR.setPower(-MotorPowerLY1);
                 MotorBL.setPower(-MotorPowerLY1);
                 MotorBR.setPower(-MotorPowerLY1);
-            }
-
             // do not change unless you know what you are doing!!!
-            if (MotorPowerRX1 > 0) { // move left
+            } else if (MotorPowerRX1 > 0) { // move left
+                    MotorFL.setPower(-MotorPowerRX1);
+                    MotorFR.setPower(-MotorPowerRX1);
+                    MotorBL.setPower(-MotorPowerRX1);
+                    MotorBR.setPower(MotorPowerRX1);
+            } else if (MotorPowerRX1 < -0) { // move right
                 MotorFL.setPower(-MotorPowerRX1);
                 MotorFR.setPower(-MotorPowerRX1);
                 MotorBL.setPower(-MotorPowerRX1);
                 MotorBR.setPower(MotorPowerRX1);
-            }
-
-            // do not change unless you know what you are doing!!!
-            if (MotorPowerRX1 < -0) { // move right
-                MotorFL.setPower(-MotorPowerRX1);
-                MotorFR.setPower(-MotorPowerRX1);
-                MotorBL.setPower(-MotorPowerRX1);
-                MotorBR.setPower(MotorPowerRX1);
-            }
-
-            // do not change unless you know what you are doing!!!
-            if (TriggerL21 > 0) { // rotate left
+            } else if (TriggerL21 > 0) { // rotate left
                 MotorFL.setPower(-TriggerL21);
                 MotorFR.setPower(-TriggerL21);
                 MotorBL.setPower(TriggerL21);
                 MotorBR.setPower(-TriggerL21);
-            }
-
-            // do not change unless you know what you are doing!!!
-            if (TriggerR21 > 0) { // rotate right
+            } else if (TriggerR21 > 0) { // rotate right
                 MotorFL.setPower(TriggerR21);
                 MotorFR.setPower(TriggerR21);
                 MotorBL.setPower(-TriggerR21);
                 MotorBR.setPower(TriggerR21);
+            } else {
+                // floor all of the motor movement values when no inputs
+                MotorFL.setPower(0);
+                MotorFR.setPower(0);
+                MotorBL.setPower(0);
+                MotorBR.setPower(0);
             }
 
-            // floor all of the motor movement values
-            MotorFL.setPower(0);
-            MotorFR.setPower(0);
-            MotorBL.setPower(0);
-            MotorBR.setPower(0);
-            //Arm1.setPower(0);
-            //Arm2.setPower(0);
+
+
         }
     }
 }
