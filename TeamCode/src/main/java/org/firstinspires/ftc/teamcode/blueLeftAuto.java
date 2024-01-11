@@ -194,7 +194,7 @@ public class blueLeftAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -250) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -232,7 +232,7 @@ public class blueLeftAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -250) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -260,7 +260,7 @@ public class blueLeftAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -250) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -385,33 +385,31 @@ public class blueLeftAuto extends LinearOpMode {
             zeroMotors();
             //move to the tag we want
             found = false;
-            if (pixelLocal != 1) {
-                MotorFL.setVelocity(300);
-                MotorFR.setVelocity(300);
-                MotorBL.setVelocity(300);
-                MotorBR.setVelocity(-300);
-                while (true) {
-                    for (AprilTagDetection detection : currentDetections) {
-                        if (detection.id == pixelLocal) {
-                            found = true;
-                        } else {
-                            found = false;
-                        }
-                        if (found) {
-                            break;
-                        }
+            MotorFL.setVelocity(300);
+            MotorFR.setVelocity(300);
+            MotorBL.setVelocity(300);
+            MotorBR.setVelocity(-300);
+            while (true) {
+                for (AprilTagDetection detection : currentDetections) {
+                    if (detection.id == pixelLocal) {
+                        found = true;
+                    } else {
+                        found = false;
                     }
                     if (found) {
-                        zeroMotors();
                         break;
                     }
-                    currentDetections = aprilTag.getDetections();
                 }
+                if (found) {
+                    zeroMotors();
+                    break;
+                }
+                currentDetections = aprilTag.getDetections();
             }
             //move to put pixel on backboard
             ClawArm.setPosition(0.15);
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 50) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
                 MotorFL.setVelocity(300);
                 MotorFR.setVelocity(300);
                 MotorBL.setVelocity(300);
