@@ -140,7 +140,7 @@ public class blueRightAuto extends LinearOpMode {
         if (opModeIsActive()) {
             telemetry.update();
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1600) {            // 1830
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1700) {            // 1830
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
@@ -150,13 +150,19 @@ public class blueRightAuto extends LinearOpMode {
             zeroMotors();
             boolean FoundLeft = false;
             boolean FoundRight = false;
+            telemetry.addData("FoundLeft", FoundLeft);
+            telemetry.addData("FoundRight", FoundRight);
+            telemetry.addData("LeftRange", String.format("%.01f mm", LeftDistance.getDistance(DistanceUnit.MM)));
+            telemetry.addData("RightRange", String.format("%.01f mm", RightDistance.getDistance(DistanceUnit.MM)));
+            telemetry.update();
             // go forward more while looking at the distance value
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 600) { // go forward some distance
-                if (LeftDistance.getDistance(DistanceUnit.MM) < 250) {
+
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 1200) { // go forward some distance
+                if (LeftDistance.getDistance(DistanceUnit.MM) < 500) {
                     FoundLeft = true;
                     break;
                 }
-                if (RightDistance.getDistance(DistanceUnit.MM) < 250) {
+                if (RightDistance.getDistance(DistanceUnit.MM) < 500) {
                     FoundRight = true;
                     break;
                 }
@@ -177,7 +183,7 @@ public class blueRightAuto extends LinearOpMode {
                 runtime.reset();
                 resetEncoders();
                 robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                while (opModeIsActive() && robotOrientation.firstAngle < 90) {
+                while (opModeIsActive() && robotOrientation.firstAngle < 80) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
                     robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -194,7 +200,7 @@ public class blueRightAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -213,7 +219,7 @@ public class blueRightAuto extends LinearOpMode {
                 pixelLocal = 3;
                 telemetry.update();
                 robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                while (opModeIsActive() && robotOrientation.firstAngle > -90) {
+                while (opModeIsActive() && robotOrientation.firstAngle > -80) {
                     MotorBR.setVelocity(1000);
                     MotorFL.setVelocity(1000);
                     robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -232,7 +238,7 @@ public class blueRightAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -241,26 +247,15 @@ public class blueRightAuto extends LinearOpMode {
                 zeroMotors();
                 ClawHand.setPosition(0.4);
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 2) {
+                while (opModeIsActive() && runtime.seconds() < 1) {
                     ClawHand.setPosition(0.4);
                 }
             }
             // not found assume center?
             if (!FoundLeft && !FoundRight) {
-                zeroMotors();
                 pixelLocal = 2;
                 resetEncoders();
-                while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 300) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                    telemetry.addData("color", toString().valueOf(col.blue()));
-                    telemetry.update();
-                }
-                zeroMotors();
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -250) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -270,28 +265,19 @@ public class blueRightAuto extends LinearOpMode {
                 resetEncoders();
                 ClawHand.setPosition(0.4);
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() > 2) {
+                while (opModeIsActive() && runtime.seconds() > 1) {
                     ClawHand.setPosition(0.4);
                 }
             }
             //move to yellow pixel
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 500) {
+            while (ArmR.getCurrentPosition() < 200) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-            runtime.reset();
-            // backup for 2 and 3 so that we do not hit them
-            resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 1) {
-                MotorFL.setVelocity(-1000);
-                MotorFR.setVelocity(1000);
-                MotorBL.setVelocity(1000);
-                MotorBR.setVelocity(1000);
-            }
             zeroMotors();
         }
     }
