@@ -297,9 +297,9 @@ public class redRightAuto extends LinearOpMode {
 //            if (pixelLocal == 3) {
 //                count = -300;
 //            }
-            // backup for 2 and 3 so that we do not hit them
+            // backup for 1 and 2 so that we do not hit them
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 1) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -150 && pixelLocal != 3) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
@@ -334,6 +334,7 @@ public class redRightAuto extends LinearOpMode {
                 MotorBR.setVelocity(-1000);
                 telemetry.update();
             }
+            zeroMotors();
             resetEncoders();
             while (opModeIsActive() && col.red() < 600 && MotorFL.getCurrentPosition() < 1900 || MotorFL.getCurrentPosition() < 1400) {
                 MotorFL.setVelocity(1000);
@@ -356,7 +357,6 @@ public class redRightAuto extends LinearOpMode {
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
-                telemetry.update();
             }
             zeroMotors();
             //check out rotation, so that we can see the tags
