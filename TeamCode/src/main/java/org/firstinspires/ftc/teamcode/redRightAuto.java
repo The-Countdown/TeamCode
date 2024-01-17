@@ -299,7 +299,7 @@ public class redRightAuto extends LinearOpMode {
 //            }
             // backup for 2 and 3 so that we do not hit them
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 1) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 3d) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
@@ -381,6 +381,7 @@ public class redRightAuto extends LinearOpMode {
             zeroMotors();
             //move to the tag we want
             found = false;
+            resetEncoders();
             MotorFL.setVelocity(-500);
             MotorFR.setVelocity(-500);
             MotorBL.setVelocity(-500);
@@ -402,10 +403,17 @@ public class redRightAuto extends LinearOpMode {
                 }
                 currentDetections = aprilTag.getDetections();
             }
+//            int startingRotation = MotorFL.getCurrentPosition();
+//            while (MotorFL.getCurrentPosition() + startingRotation > -300) {
+//                MotorFL.setVelocity(-500);
+//                MotorFR.setVelocity(-500);
+//                MotorBL.setVelocity(-500);
+//                MotorBR.setVelocity(500);
+//            }
             //move to put pixel on backboard
             ClawArm.setPosition(0.15);
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
                 MotorFL.setVelocity(-500);
                 MotorFR.setVelocity(-500);
                 MotorBL.setVelocity(-500);
