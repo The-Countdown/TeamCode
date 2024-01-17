@@ -299,11 +299,7 @@ public class redRightAuto extends LinearOpMode {
 //            }
             // backup for 1 and 2 so that we do not hit them
             resetEncoders();
-<<<<<<< HEAD
             while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 3) {
-=======
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -150 && pixelLocal != 3) {
->>>>>>> 9aa85ce6f88061059333a30bf9571fe018656f6b
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
