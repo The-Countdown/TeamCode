@@ -157,12 +157,12 @@ public class redRightAuto extends LinearOpMode {
             telemetry.update();
             // go forward more while looking at the distance value
 
-            while (opModeIsActive() && col.red() < 600 && MotorFL.getCurrentPosition() < 1200) { // go forward some distance
-                if (LeftDistance.getDistance(DistanceUnit.MM) < 250) {
+            while (opModeIsActive() && col.red() < 600 && MotorFL.getCurrentPosition() < 900) { // go forward some distance
+                if (LeftDistance.getDistance(DistanceUnit.MM) < 150) {
                     FoundLeft = true;
                     break;
                 }
-                if (RightDistance.getDistance(DistanceUnit.MM) < 250) {
+                if (RightDistance.getDistance(DistanceUnit.MM) < 150) {
                     FoundRight = true;
                     break;
                 }
@@ -290,16 +290,9 @@ public class redRightAuto extends LinearOpMode {
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-//            int count = -100;
-//            if (pixelLocal == 1) {
-//                count = -100;
-//            }
-//            if (pixelLocal == 3) {
-//                count = -300;
-//            }
-            // backup for 1 and 2 so that we do not hit them
+            // backup so that we do not hit them
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 3) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
@@ -345,11 +338,13 @@ public class redRightAuto extends LinearOpMode {
                 telemetry.update();
             }
             runtime.reset();
+            boolean missedLine = false;
             while (opModeIsActive() && col.red() < 600 && MotorFL.getCurrentPosition() > 1900 && runtime.seconds() < 2) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
+                missedLine = true;
             }
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() > -400) {
@@ -403,17 +398,14 @@ public class redRightAuto extends LinearOpMode {
                 }
                 currentDetections = aprilTag.getDetections();
             }
-//            int startingRotation = MotorFL.getCurrentPosition();
-//            while (MotorFL.getCurrentPosition() + startingRotation > -300) {
-//                MotorFL.setVelocity(-500);
-//                MotorFR.setVelocity(-500);
-//                MotorBL.setVelocity(-500);
-//                MotorBR.setVelocity(500);
-//            }
             //move to put pixel on backboard
             ClawArm.setPosition(0.15);
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -300) {
+            int extraMovement = -500;
+            if (pixelLocal == 2 && missedLine) {
+                extraMovement = -400;
+            }
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > extraMovement) {
                 MotorFL.setVelocity(-500);
                 MotorFR.setVelocity(-500);
                 MotorBL.setVelocity(-500);
@@ -444,7 +436,7 @@ public class redRightAuto extends LinearOpMode {
                 telemetry.update();
             }
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -50) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -200) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);

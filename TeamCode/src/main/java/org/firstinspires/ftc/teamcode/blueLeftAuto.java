@@ -157,7 +157,7 @@ public class blueLeftAuto extends LinearOpMode {
             telemetry.update();
             // go forward more while looking at the distance value
 
-            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 1200) { // go forward some distance
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 900) { // go forward some distance
                 if (LeftDistance.getDistance(DistanceUnit.MM) < 500) {
                     FoundLeft = true;
                     break;
@@ -290,16 +290,9 @@ public class blueLeftAuto extends LinearOpMode {
             }
             ArmL.setVelocity(0);
             ArmR.setVelocity(0);
-//            int count = -100;
-//            if (pixelLocal == 1) {
-//                count = -100;
-//            }
-//            if (pixelLocal == 3) {
-//                count = -300;
-//            }
-            // backup for 2 and 3 so that we do not hit them
+            // backup so that we do not hit them
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100 && pixelLocal != 1) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
@@ -335,7 +328,7 @@ public class blueLeftAuto extends LinearOpMode {
                 telemetry.update();
             }
             resetEncoders();
-            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 2100 || MotorFL.getCurrentPosition() < 1400) {
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 1900 || MotorFL.getCurrentPosition() < 1400) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
@@ -344,11 +337,13 @@ public class blueLeftAuto extends LinearOpMode {
                 telemetry.update();
             }
             runtime.reset();
-            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() > 2100 && runtime.seconds() < 2) {
+            boolean missedLine = false;
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() > 1900 && runtime.seconds() < 2) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
+                missedLine = true;
             }
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() > -400) {
