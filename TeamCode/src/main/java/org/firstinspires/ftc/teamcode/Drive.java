@@ -88,7 +88,7 @@ public class Drive extends LinearOpMode {
 
         telemetry.update();
         waitForStart();
-        servoTest.setPosition(0.7);
+        // PlaneAngle.setPosition(0.42);
         while (opModeIsActive()) {
 
             // define the encoders for the motors
@@ -170,9 +170,9 @@ public class Drive extends LinearOpMode {
                 MotorPowerLY1 = 1;
             }
 
-            MotorPowerRX1 = MotorPowerRX1 / 1.5;
-            MotorPowerLX1 = MotorPowerLX1 / 1.5;
-            MotorPowerLY1 = MotorPowerLY1 / 1.5;
+//            MotorPowerRX1 = MotorPowerRX1 / 1.2;
+//            MotorPowerLX1 = MotorPowerLX1 / 1.2;
+//            MotorPowerLY1 = MotorPowerLY1 / 1.2;
             TriggerR21 = TriggerR21 / 2;
             TriggerL21 = TriggerL21 / 2;
 
@@ -180,7 +180,7 @@ public class Drive extends LinearOpMode {
 
             if (ButtonY1) { // launch plane
                 //ModeToggle = false;
-                servoTest.setPosition(0.42);
+                PlaneAngle.setPosition(0);
                 //ArmL.setPower(-0.5);
                 //ArmR.setPower(-0.5);
             }
@@ -273,27 +273,27 @@ public class Drive extends LinearOpMode {
 
             // do not change unless you know what you are doing!!!
             if (MotorPowerLY1 > -0) { // move forward
-                MotorFL.setPower(MotorPowerLY1);
-                MotorFR.setPower(-MotorPowerLY1);
-                MotorBL.setPower(-MotorPowerLY1);
-                MotorBR.setPower(-MotorPowerLY1);
+                MotorFL.setPower(MotorPowerLY1 / 1.5);
+                MotorFR.setPower(-MotorPowerLY1 / 1.5);
+                MotorBL.setPower(-MotorPowerLY1 / 1.5);
+                MotorBR.setPower(-MotorPowerLY1 / 1.5);
             // do not change unless you know what you are doing!!!
             } else if (MotorPowerLY1 < 0) { // move backwords
-                MotorFL.setPower(MotorPowerLY1);
-                MotorFR.setPower(-MotorPowerLY1);
-                MotorBL.setPower(-MotorPowerLY1);
-                MotorBR.setPower(-MotorPowerLY1);
+                MotorFL.setPower(MotorPowerLY1 / 1.5);
+                MotorFR.setPower(-MotorPowerLY1 / 1.5);
+                MotorBL.setPower(-MotorPowerLY1 / 1.5);
+                MotorBR.setPower(-MotorPowerLY1 / 1.5);
             // do not change unless you know what you are doing!!!
             } else if (MotorPowerRX1 > 0) { // move left
-                    MotorFL.setPower(-MotorPowerRX1);
-                    MotorFR.setPower(-MotorPowerRX1);
-                    MotorBL.setPower(-MotorPowerRX1);
-                    MotorBR.setPower(MotorPowerRX1);
+                    MotorFL.setPower(-MotorPowerRX1 / 1.5);
+                    MotorFR.setPower(-MotorPowerRX1 / 1.5);
+                    MotorBL.setPower(-MotorPowerRX1 / 1.5);
+                    MotorBR.setPower(MotorPowerRX1 / 1.5);
             } else if (MotorPowerRX1 < -0) { // move right
-                MotorFL.setPower(-MotorPowerRX1);
-                MotorFR.setPower(-MotorPowerRX1);
-                MotorBL.setPower(-MotorPowerRX1);
-                MotorBR.setPower(MotorPowerRX1);
+                MotorFL.setPower(-MotorPowerRX1 / 1.5);
+                MotorFR.setPower(-MotorPowerRX1 / 1.5);
+                MotorBL.setPower(-MotorPowerRX1 / 1.5);
+                MotorBR.setPower(MotorPowerRX1 / 1.5);
             } else if (TriggerL21 > 0) { // rotate left
                 MotorFL.setPower(-TriggerL21);
                 MotorFR.setPower(-TriggerL21);
