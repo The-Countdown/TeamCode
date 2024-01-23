@@ -157,7 +157,7 @@ public class Drive extends LinearOpMode {
             telemetry.addData("Color Blue:", Color.blue());
             telemetry.addData("Color Green:", Color.green());
             //telemetry.addData("Status Touch", ButtonTouch);
-            //telemetry.addData("Status lol", Arm1.getCurrentPosition());
+            //telemetry.addData("Status arm", Arm1.getCurrentPosition());
             telemetry.update();
 
             if (MotorPowerRX1 > 1) { // make sure values don't go over 1
@@ -273,27 +273,27 @@ public class Drive extends LinearOpMode {
 
             // do not change unless you know what you are doing!!!
             if (MotorPowerLY1 > -0) { // move forward
-                MotorFL.setPower(MotorPowerLY1 / 1.5);
-                MotorFR.setPower(-MotorPowerLY1 / 1.5);
-                MotorBL.setPower(-MotorPowerLY1 / 1.5);
-                MotorBR.setPower(-MotorPowerLY1 / 1.5);
+                MotorFL.setPower(MotorPowerLY1);
+                MotorFR.setPower(-MotorPowerLY1);
+                MotorBL.setPower(-MotorPowerLY1);
+                MotorBR.setPower(-MotorPowerLY1);
             // do not change unless you know what you are doing!!!
             } else if (MotorPowerLY1 < 0) { // move backwords
-                MotorFL.setPower(MotorPowerLY1 / 1.5);
-                MotorFR.setPower(-MotorPowerLY1 / 1.5);
-                MotorBL.setPower(-MotorPowerLY1 / 1.5);
-                MotorBR.setPower(-MotorPowerLY1 / 1.5);
+                MotorFL.setPower(MotorPowerLY1);
+                MotorFR.setPower(-MotorPowerLY1);
+                MotorBL.setPower(-MotorPowerLY1);
+                MotorBR.setPower(-MotorPowerLY1);
             // do not change unless you know what you are doing!!!
             } else if (MotorPowerRX1 > 0) { // move left
-                    MotorFL.setPower(-MotorPowerRX1 / 1.5);
-                    MotorFR.setPower(-MotorPowerRX1 / 1.5);
-                    MotorBL.setPower(-MotorPowerRX1 / 1.5);
-                    MotorBR.setPower(MotorPowerRX1 / 1.5);
+                    MotorFL.setPower(-MotorPowerRX1);
+                    MotorFR.setPower(-MotorPowerRX1);
+                    MotorBL.setPower(-MotorPowerRX1);
+                    MotorBR.setPower(MotorPowerRX1);
             } else if (MotorPowerRX1 < -0) { // move right
-                MotorFL.setPower(-MotorPowerRX1 / 1.5);
-                MotorFR.setPower(-MotorPowerRX1 / 1.5);
-                MotorBL.setPower(-MotorPowerRX1 / 1.5);
-                MotorBR.setPower(MotorPowerRX1 / 1.5);
+                MotorFL.setPower(-MotorPowerRX1);
+                MotorFR.setPower(-MotorPowerRX1);
+                MotorBL.setPower(-MotorPowerRX1);
+                MotorBR.setPower(MotorPowerRX1);
             } else if (TriggerL21 > 0) { // rotate left
                 MotorFL.setPower(-TriggerL21);
                 MotorFR.setPower(-TriggerL21);
