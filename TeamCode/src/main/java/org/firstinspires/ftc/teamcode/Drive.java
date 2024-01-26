@@ -25,7 +25,8 @@ public class Drive extends LinearOpMode {
     private DcMotorEx PullDownL;
     private DcMotorEx PullDownR;
     private Servo ClawArm;
-    private Servo ClawHand;
+    private Servo ClawHand1;
+    private Servo ClawHand2;
     private Servo servoTest;
     private Servo PlaneAngle;
     private ColorSensor Color;
@@ -47,7 +48,8 @@ public class Drive extends LinearOpMode {
         PullDownL = hardwareMap.get(DcMotorEx.class, "PullDownL");
         PullDownR = hardwareMap.get(DcMotorEx.class, "PullDownR");
         ClawArm = hardwareMap.get(Servo.class, "ClawArm");
-        ClawHand = hardwareMap.get(Servo.class, "ClawHand");
+        ClawHand1 = hardwareMap.get(Servo.class, "ClawHand1");
+        ClawHand2 = hardwareMap.get(Servo.class, "ClawHand2");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
         PlaneAngle = hardwareMap.get(Servo.class, "PlaneAngle");
         Color = hardwareMap.get(ColorSensor.class, "col");
@@ -68,7 +70,6 @@ public class Drive extends LinearOpMode {
         PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double TSpeed = 1;
-        double BSpeed = 2;
         double FBSpeed = 1.5;
         double LRSpeed = 1.5;
         double ROSpeed = 1.5;
@@ -134,13 +135,6 @@ public class Drive extends LinearOpMode {
             float TriggerR22 = gamepad2.right_trigger;
             float TriggerL22 = gamepad2.left_trigger;
 
-            //boolean ButtonTouch = Touch.isPressed();
-
-            MotorPowerRX1 = MotorPowerRX1 * BSpeed;
-            MotorPowerLX1 = MotorPowerLX1 * BSpeed;
-            MotorPowerLY1 = MotorPowerLY1 * BSpeed;
-
-
             telemetry.addData("Status lx1: ", MotorPowerLX1);
             telemetry.addData("Status ly1: ", MotorPowerLY1);
             telemetry.addData("Status rx1: ", MotorPowerRX1);
@@ -156,8 +150,6 @@ public class Drive extends LinearOpMode {
             telemetry.addData("Color Red:", Color.red());
             telemetry.addData("Color Blue:", Color.blue());
             telemetry.addData("Color Green:", Color.green());
-            //telemetry.addData("Status Touch", ButtonTouch);
-            //telemetry.addData("Status arm", Arm1.getCurrentPosition());
             telemetry.update();
 
             if (MotorPowerRX1 > 1) { // make sure values don't go over 1
@@ -170,9 +162,8 @@ public class Drive extends LinearOpMode {
                 MotorPowerLY1 = 1;
             }
 
-//            MotorPowerRX1 = MotorPowerRX1 / 1.2;
-//            MotorPowerLX1 = MotorPowerLX1 / 1.2;
-//            MotorPowerLY1 = MotorPowerLY1 / 1.2;
+            MotorPowerRX1 = MotorPowerRX1 * 1.2;
+            MotorPowerLY1 = MotorPowerLY1 * 1.2;
             TriggerR21 = TriggerR21 / 2;
             TriggerL21 = TriggerL21 / 2;
 
@@ -185,11 +176,11 @@ public class Drive extends LinearOpMode {
                 //ArmR.setPower(-0.5);
             }
 
-            if (ButtonB2) { // raise the arm (I think)
+            if (ButtonDPright2) { // raise the arm
                 ClawArm.setPosition(0.15);
             }
 
-            if (ButtonY2) { // lower the arm (I think)
+            if (ButtonDPleft2) { // lower the arm
                 ClawArm.setPosition(0.4);
             }
 
@@ -197,12 +188,18 @@ public class Drive extends LinearOpMode {
                 ClawArm.setPosition(0);
             }
 
+            if (ButtonDPdown2 || ButtonDPdown1) {
+                ClawArm.setPosition(0.32);
+            }
+
             if (ButtonA2) {
-                ClawHand.setPosition(0.1);
+                ClawHand1.setPosition(0.1);
+                ClawHand2.setPosition(0.1);
             }
 
             if (ButtonX2) {
-                ClawHand.setPosition(0.4);
+                ClawHand1.setPosition(0.5);
+                ClawHand2.setPosition(0.5);
             }
             if (armLock == false) {
                 ArmL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -258,62 +255,68 @@ public class Drive extends LinearOpMode {
                 //Arm1.setPower(1);
             }
 
-            telemetry.addLine(toString().valueOf(ArmL.getVelocity()));
-            telemetry.addLine(toString().valueOf(ArmR.getVelocity()));
-            telemetry.addLine(toString().valueOf(arPos));
-            telemetry.addLine(toString().valueOf(alPos));
-            telemetry.addLine(toString().valueOf(pdrPos));
-            telemetry.addLine(toString().valueOf(pdlPos));
-            telemetry.addLine(toString().valueOf(armLock));
+//            telemetry.addLine(toString().valueOf(ArmL.getVelocity()));
+//            telemetry.addLine(toString().valueOf(ArmR.getVelocity()));
+//            telemetry.addLine(toString().valueOf(arPos));
+//            telemetry.addLine(toString().valueOf(alPos));
+//            telemetry.addLine(toString().valueOf(pdrPos));
+//            telemetry.addLine(toString().valueOf(pdlPos));
+//            telemetry.addLine(toString().valueOf(armLock));
 //            if (ButtonDPdown2) {
 //                PullDownL.setPower(-1);
 //                PullDownR.setPower(1);
 //                //Arm1.setPower(-1);
 //            }
 
+            double speed = 2;
+            double slowFactor = 1.2;
+
             // do not change unless you know what you are doing!!!
-            if (MotorPowerLY1 > -0) { // move forward
-                MotorFL.setPower(MotorPowerLY1);
-                MotorFR.setPower(-MotorPowerLY1);
-                MotorBL.setPower(-MotorPowerLY1);
-                MotorBR.setPower(-MotorPowerLY1);
+            if (MotorPowerLY1 > 0.1) { // move forward
+                MotorFL.setPower(speed / slowFactor);
+                MotorFR.setPower(-speed / slowFactor);
+                MotorBL.setPower(-speed / slowFactor);
+                MotorBR.setPower(-speed / slowFactor);
+            }
             // do not change unless you know what you are doing!!!
-            } else if (MotorPowerLY1 < 0) { // move backwords
-                MotorFL.setPower(MotorPowerLY1);
-                MotorFR.setPower(-MotorPowerLY1);
-                MotorBL.setPower(-MotorPowerLY1);
-                MotorBR.setPower(-MotorPowerLY1);
+            if (MotorPowerLY1 < -0.1) { // move backwords
+                MotorFL.setPower(-speed / slowFactor);
+                MotorFR.setPower(speed / slowFactor);
+                MotorBL.setPower(speed / slowFactor);
+                MotorBR.setPower(speed / slowFactor);
+            }
             // do not change unless you know what you are doing!!!
-            } else if (MotorPowerRX1 > 0) { // move left
-                    MotorFL.setPower(-MotorPowerRX1);
-                    MotorFR.setPower(-MotorPowerRX1);
-                    MotorBL.setPower(-MotorPowerRX1);
-                    MotorBR.setPower(MotorPowerRX1);
-            } else if (MotorPowerRX1 < -0) { // move right
-                MotorFL.setPower(-MotorPowerRX1);
-                MotorFR.setPower(-MotorPowerRX1);
-                MotorBL.setPower(-MotorPowerRX1);
-                MotorBR.setPower(MotorPowerRX1);
-            } else if (TriggerL21 > 0) { // rotate left
-                MotorFL.setPower(-TriggerL21);
-                MotorFR.setPower(-TriggerL21);
-                MotorBL.setPower(TriggerL21);
-                MotorBR.setPower(-TriggerL21);
-            } else if (TriggerR21 > 0) { // rotate right
-                MotorFL.setPower(TriggerR21);
-                MotorFR.setPower(TriggerR21);
-                MotorBL.setPower(-TriggerR21);
-                MotorBR.setPower(TriggerR21);
-            } else {
+            if (MotorPowerRX1 > 0.1) { // move left
+                MotorFL.setPower(-speed / slowFactor);
+                MotorFR.setPower(-speed / slowFactor);
+                MotorBL.setPower(-speed / slowFactor);
+                MotorBR.setPower(speed / slowFactor);
+            }
+            if (MotorPowerRX1 < -0.1) { // move right
+                MotorFL.setPower(speed / slowFactor);
+                MotorFR.setPower(speed / slowFactor);
+                MotorBL.setPower(speed / slowFactor);
+                MotorBR.setPower(-speed / slowFactor);
+            }
+            if (TriggerL21 > 0.1) { // rotate left
+                MotorFL.setPower(-speed / slowFactor);
+                MotorFR.setPower(-speed / slowFactor);
+                MotorBL.setPower(speed / slowFactor);
+                MotorBR.setPower(-speed / slowFactor);
+            }
+            if (TriggerR21 > 0.1) { // rotate right
+                MotorFL.setPower(speed / slowFactor);
+                MotorFR.setPower(speed / slowFactor);
+                MotorBL.setPower(-speed / slowFactor);
+                MotorBR.setPower(speed / slowFactor);
+            }
+            if (MotorPowerLY1 > -0.1 && MotorPowerLY1 < 0.1 && MotorPowerRX1 > -0.1 && MotorPowerRX1 < 0.1 && TriggerL21 < 0.1 && TriggerR21 < 0.1) {
                 // floor all of the motor movement values when no inputs
                 MotorFL.setPower(0);
                 MotorFR.setPower(0);
                 MotorBL.setPower(0);
                 MotorBR.setPower(0);
             }
-
-
-
         }
     }
 }
