@@ -69,11 +69,6 @@ public class Drive extends LinearOpMode {
         PullDownL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double TSpeed = 1;
-        double FBSpeed = 1.5;
-        double LRSpeed = 1.5;
-        double ROSpeed = 1.5;
-
         double MotorPowerLY1 = 0;
         double MotorPowerLX1 = 0;
         double MotorPowerRX1 = 0;
@@ -81,11 +76,17 @@ public class Drive extends LinearOpMode {
 
         boolean ModeToggle = false;
 
+        double rightTrigger;
+        double leftTrigger;
+
         boolean armLock = false;
+        boolean validStick = false;
         int arPos = 0;
         int alPos = 0;
         int pdrPos = 0;
         int pdlPos = 0;
+
+        double slowFactor;
 
         telemetry.update();
         waitForStart();
@@ -99,10 +100,10 @@ public class Drive extends LinearOpMode {
             int MotorBREncoder = MotorBR.getCurrentPosition();
 
             // input for controller 1
-            MotorPowerLY1 = -this.gamepad1.left_stick_y / FBSpeed * TSpeed;
-            MotorPowerLX1 = -this.gamepad1.left_stick_x / LRSpeed * TSpeed;
-            MotorPowerRX1 = -this.gamepad1.right_stick_x / ROSpeed * TSpeed;
-            MotorPowerRY1 = -this.gamepad1.right_stick_y;
+            MotorPowerLX1 = 2500 * Math.pow(-this.gamepad1.left_stick_y, 3);
+            MotorPowerLY1 = 2500 * Math.pow(-this.gamepad1.left_stick_y, 3);
+            MotorPowerRY1 = 2500 * Math.pow(-this.gamepad1.right_stick_x, 3);
+            MotorPowerRX1 = 2500 * Math.pow(-this.gamepad1.right_stick_x, 3);
 
             boolean ButtonX1 = gamepad1.x;
             boolean ButtonY1 = gamepad1.y;
@@ -135,7 +136,6 @@ public class Drive extends LinearOpMode {
             float TriggerR22 = gamepad2.right_trigger;
             float TriggerL22 = gamepad2.left_trigger;
 
-            telemetry.addData("Status lx1: ", MotorPowerLX1);
             telemetry.addData("Status ly1: ", MotorPowerLY1);
             telemetry.addData("Status rx1: ", MotorPowerRX1);
             telemetry.addData("Status ButtonX1: ", ButtonX1);
@@ -151,21 +151,6 @@ public class Drive extends LinearOpMode {
             telemetry.addData("Color Blue:", Color.blue());
             telemetry.addData("Color Green:", Color.green());
             telemetry.update();
-
-            if (MotorPowerRX1 > 1) { // make sure values don't go over 1
-                MotorPowerRX1 = 1;
-            }
-            if (MotorPowerLX1 > 1) { // make sure values don't go over 1
-                MotorPowerLX1 = 1;
-            }
-            if (MotorPowerLY1 > 1) { // make sure values don't go over 1
-                MotorPowerLY1 = 1;
-            }
-
-            MotorPowerRX1 = MotorPowerRX1 * 1.2;
-            MotorPowerLY1 = MotorPowerLY1 * 1.2;
-            TriggerR21 = TriggerR21 / 2;
-            TriggerL21 = TriggerL21 / 2;
 
 
 
@@ -268,55 +253,16 @@ public class Drive extends LinearOpMode {
 //                //Arm1.setPower(-1);
 //            }
 
-            double speed = 2;
-            double slowFactor = 1.2;
+            slowFactor = 1.2;
+            validStick = false;
 
-            // do not change unless you know what you are doing!!!
-            if (MotorPowerLY1 > 0.1) { // move forward
-                MotorFL.setPower(speed / slowFactor);
-                MotorFR.setPower(-speed / slowFactor);
-                MotorBL.setPower(-speed / slowFactor);
-                MotorBR.setPower(-speed / slowFactor);
-            }
-            // do not change unless you know what you are doing!!!
-            if (MotorPowerLY1 < -0.1) { // move backwords
-                MotorFL.setPower(-speed / slowFactor);
-                MotorFR.setPower(speed / slowFactor);
-                MotorBL.setPower(speed / slowFactor);
-                MotorBR.setPower(speed / slowFactor);
-            }
-            // do not change unless you know what you are doing!!!
-            if (MotorPowerRX1 > 0.1) { // move left
-                MotorFL.setPower(-speed / slowFactor);
-                MotorFR.setPower(-speed / slowFactor);
-                MotorBL.setPower(-speed / slowFactor);
-                MotorBR.setPower(speed / slowFactor);
-            }
-            if (MotorPowerRX1 < -0.1) { // move right
-                MotorFL.setPower(speed / slowFactor);
-                MotorFR.setPower(speed / slowFactor);
-                MotorBL.setPower(speed / slowFactor);
-                MotorBR.setPower(-speed / slowFactor);
-            }
-            if (TriggerL21 > 0.1) { // rotate left
-                MotorFL.setPower(-speed / slowFactor);
-                MotorFR.setPower(-speed / slowFactor);
-                MotorBL.setPower(speed / slowFactor);
-                MotorBR.setPower(-speed / slowFactor);
-            }
-            if (TriggerR21 > 0.1) { // rotate right
-                MotorFL.setPower(speed / slowFactor);
-                MotorFR.setPower(speed / slowFactor);
-                MotorBL.setPower(-speed / slowFactor);
-                MotorBR.setPower(speed / slowFactor);
-            }
-            if (MotorPowerLY1 > -0.1 && MotorPowerLY1 < 0.1 && MotorPowerRX1 > -0.1 && MotorPowerRX1 < 0.1 && TriggerL21 < 0.1 && TriggerR21 < 0.1) {
-                // floor all of the motor movement values when no inputs
-                MotorFL.setPower(0);
-                MotorFR.setPower(0);
-                MotorBL.setPower(0);
-                MotorBR.setPower(0);
-            }
+            rightTrigger = 1550 * Math.pow(-this.gamepad1.right_trigger, 3);
+            leftTrigger = 1550 * Math.pow(-this.gamepad1.left_trigger, 3);
+
+            MotorFL.setVelocity(MotorPowerLY1 + -MotorPowerRX1 + leftTrigger + -rightTrigger);
+            MotorFR.setVelocity(-MotorPowerLY1 + -MotorPowerRX1 + leftTrigger + -rightTrigger);
+            MotorBL.setVelocity(-MotorPowerLY1 + -MotorPowerRX1 + -leftTrigger + rightTrigger);
+            MotorBR.setVelocity(-MotorPowerLY1 + MotorPowerRX1 + leftTrigger + -rightTrigger);
         }
     }
 }
