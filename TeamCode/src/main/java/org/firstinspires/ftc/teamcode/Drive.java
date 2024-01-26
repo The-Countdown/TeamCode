@@ -79,12 +79,7 @@ public class Drive extends LinearOpMode {
         double rightTrigger;
         double leftTrigger;
 
-        boolean armLock = false;
         boolean validStick = false;
-        int arPos = 0;
-        int alPos = 0;
-        int pdrPos = 0;
-        int pdlPos = 0;
 
         double slowFactor;
 
