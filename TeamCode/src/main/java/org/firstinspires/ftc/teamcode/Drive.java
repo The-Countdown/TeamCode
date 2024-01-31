@@ -79,12 +79,7 @@ public class Drive extends LinearOpMode {
         double rightTrigger;
         double leftTrigger;
 
-        boolean armLock = false;
         boolean validStick = false;
-        int arPos = 0;
-        int alPos = 0;
-        int pdrPos = 0;
-        int pdlPos = 0;
 
         double slowFactor;
 
@@ -177,26 +172,32 @@ public class Drive extends LinearOpMode {
                 ClawArm.setPosition(0.32);
             }
 
-            if (ButtonA2) {
-                ClawHand1.setPosition(0.1);
-                ClawHand2.setPosition(0.1);
-            }
-
+            // open claw
             if (ButtonX2) {
                 ClawHand1.setPosition(0.5);
                 ClawHand2.setPosition(0.5);
             }
 
+            // close claw
+            if (ButtonA2) {
+                ClawHand1.setPosition(0.1);
+                ClawHand2.setPosition(0.1);
+            }
+
+            // left claw up
             if (-gamepad2.left_stick_y > .5) {
                 ClawHand1.setPosition(0.5);
             }
+            // left claw down
             if (-gamepad2.left_stick_y < -.5) {
                 ClawHand1.setPosition(0.1);
             }
 
+            // right claw up
             if (-gamepad2.right_stick_y > .5) {
                 ClawHand2.setPosition(0.5);
             }
+            // right claw down
             if (-gamepad2.right_stick_y < -.5) {
                 ClawHand2.setPosition(0.1);
             }
