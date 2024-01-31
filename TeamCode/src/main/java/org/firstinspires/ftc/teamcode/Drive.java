@@ -226,8 +226,33 @@ public class Drive extends LinearOpMode {
             slowFactor = 1.2;
             validStick = false;
 
+
             rightTrigger = 1550 * Math.pow(-this.gamepad1.right_trigger, 3);
             leftTrigger = 1550 * Math.pow(-this.gamepad1.left_trigger, 3);
+
+            if (gamepad1.right_bumper) {
+                rightTrigger = -800;
+            }
+
+            if (gamepad1.left_bumper) {
+                leftTrigger = -800;
+            }
+
+            if (Math.abs(rightTrigger) < 200) {
+                rightTrigger = 0;
+            }
+
+            if (Math.abs(leftTrigger) < 200) {
+                leftTrigger = 0;
+            }
+
+            if (Math.abs(MotorPowerLY1) < 200) {
+                MotorPowerLY1 = 0;
+            }
+
+            if (Math.abs(MotorPowerRX1) < 200) {
+                MotorPowerRX1 = 0;
+            }
 
             MotorFL.setVelocity(MotorPowerLY1 + -MotorPowerRX1 + leftTrigger + -rightTrigger);
             MotorFR.setVelocity(-MotorPowerLY1 + -MotorPowerRX1 + leftTrigger + -rightTrigger);
