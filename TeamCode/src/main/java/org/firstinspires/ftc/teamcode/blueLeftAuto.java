@@ -222,7 +222,7 @@ public class blueLeftAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -200) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -475,6 +475,7 @@ public class blueLeftAuto extends LinearOpMode {
                 MotorBR.setVelocity(-500);
             }
             zeroMotors();
+            ClawArm.setPosition(0.4);
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 600) {
                 MotorFL.setVelocity(1000);
