@@ -137,7 +137,6 @@ public class Drive extends LinearOpMode {
             telemetry.addData("Status rightTrigger1: ", TriggerR21);
             telemetry.addData("Status Mode1: ", ButtonOptions2);
             telemetry.addData("Status Share1: ", ButtonShare2);
-            telemetry.addData("Status ModeToggle1: ", ModeToggle);
             telemetry.addData("MotorFL encoder: ", MotorFLEncoder);
             telemetry.addData("MotorFR encoder: ", MotorFREncoder);
             telemetry.addData("MotorBL encoder: ", MotorBLEncoder);
@@ -149,11 +148,18 @@ public class Drive extends LinearOpMode {
 
 
 
-            if (ButtonY1) { // launch plane
-                //ModeToggle = false;
-                PlaneAngle.setPosition(0);
-                //ArmL.setPower(-0.5);
-                //ArmR.setPower(-0.5);
+            if (ButtonY1) {
+                ModeToggle = false;
+            }
+
+            if (ButtonX1) {
+                ModeToggle = true;
+            }
+
+            telemetry.addData("ModeToggle: ", ModeToggle);
+            if (ModeToggle) {
+                MotorPowerLY1 = MotorPowerLY1 / 2;
+                MotorPowerRX1 = MotorPowerRX1 / 2;
             }
 
             if (ButtonDPright2) { // raise the arm
