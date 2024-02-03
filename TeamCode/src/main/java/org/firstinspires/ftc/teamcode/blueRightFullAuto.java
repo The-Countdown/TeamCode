@@ -1,22 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -25,11 +28,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Disabled
-@Autonomous(name = "Blue Backboard Auto")
-public class BlueBackboardAuto extends LinearOpMode {
-    private DistanceSensor LeftDistance;
-    private DistanceSensor RightDistance;
+@Autonomous(name = "Blue Right Full Auto")
+public class blueRightFullAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -40,20 +40,18 @@ public class BlueBackboardAuto extends LinearOpMode {
     private DcMotorEx PullDownL;
     private DcMotorEx PullDownR;
     private Servo ClawArm;
-    private Servo ClawHand;
+    private Servo ClawHand1;
+    private Servo ClawHand2;
     private Servo servoTest;
-    private ColorSensor Color;
-    private IMU imu;
+    private DistanceSensor LeftDistance;
+    private DistanceSensor RightDistance;
+    private BNO055IMU imu;
+    private ColorSensor col;
     ElapsedTime runtime = new ElapsedTime();
-
+    Orientation robotOrientation;
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
-    /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
-     */
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
-
     private VisionPortal visionPortal;
 
     public void zeroMotors() {
@@ -74,12 +72,14 @@ public class BlueBackboardAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        LeftDistance = hardwareMap.get(DistanceSensor.class, "LeftDistance");
-        Rev2mDistanceSensor sensorTimeOfFlightLeft = (Rev2mDistanceSensor)LeftDistance;
-        RightDistance = hardwareMap.get(DistanceSensor.class, "RightDistance");
-        Rev2mDistanceSensor sensorTimeOfFlightRight = (Rev2mDistanceSensor)RightDistance;
-        Color = hardwareMap.get(ColorSensor.class, "col");
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         MotorFL = hardwareMap.get(DcMotorEx.class, "MotorFL"); // this is the motor pluged into 0
         MotorFR = hardwareMap.get(DcMotorEx.class, "MotorFR"); // this is the motor pluged into 1
@@ -90,32 +90,18 @@ public class BlueBackboardAuto extends LinearOpMode {
         PullDownL = hardwareMap.get(DcMotorEx.class, "PullDownL");
         PullDownR = hardwareMap.get(DcMotorEx.class, "PullDownR");
         ClawArm = hardwareMap.get(Servo.class, "ClawArm");
-        ClawHand = hardwareMap.get(Servo.class, "ClawHand");
+        ClawHand1 = hardwareMap.get(Servo.class, "ClawHand1");
+        ClawHand2 = hardwareMap.get(Servo.class, "ClawHand2");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        col = hardwareMap.get(ColorSensor.class, "col");
+        LeftDistance = hardwareMap.get(DistanceSensor.class, "LeftDistance");
+        RightDistance = hardwareMap.get(DistanceSensor.class, "RightDistance");
 
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(parameters);
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         telemetry.addData("Status", "Initialized");
-        // max for the distance sensor is about 1000mm (minimal testing)
-        // undefined distance for the sensor is 8190mm
-        telemetry.addData("deviceName", LeftDistance.getDeviceName() );
-        telemetry.addData("LeftRange", String.format("%.01f mm", LeftDistance.getDistance(DistanceUnit.MM)));
-        telemetry.addData("LeftRange", String.format("%.01f cm", LeftDistance.getDistance(DistanceUnit.CM)));
-        telemetry.addData("LeftRange", String.format("%.01f m", LeftDistance.getDistance(DistanceUnit.METER)));
-        telemetry.addData("LeftRange", String.format("%.01f in", LeftDistance.getDistance(DistanceUnit.INCH)));
-        telemetry.addData("deviceName", RightDistance.getDeviceName() );
-        telemetry.addData("RightRange", String.format("%.01f mm", RightDistance.getDistance(DistanceUnit.MM)));
-        telemetry.addData("RightRange", String.format("%.01f cm", RightDistance.getDistance(DistanceUnit.CM)));
-        telemetry.addData("RightRange", String.format("%.01f m", RightDistance.getDistance(DistanceUnit.METER)));
-        telemetry.addData("RightRange", String.format("%.01f in", RightDistance.getDistance(DistanceUnit.INCH)));
-
 
         MotorFL.setDirection(DcMotorEx.Direction.FORWARD);
         MotorFR.setDirection(DcMotorEx.Direction.FORWARD);
@@ -131,12 +117,16 @@ public class BlueBackboardAuto extends LinearOpMode {
         PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.update();
+        ClawHand1.setPosition(0.1);
+        ClawHand2.setPosition(0.1);
         waitForStart();
         runtime.reset();
-        ClawHand.setPosition(0.1);
+        ClawHand1.setPosition(0.1);
+        ClawHand2.setPosition(0.1);
 
         short pixelLocal = -1;
 
+        //initTfod();
         initAprilTag();
 
         // Wait for the DS start button to be touched.
@@ -144,34 +134,56 @@ public class BlueBackboardAuto extends LinearOpMode {
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
         waitForStart();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+
+//        while (opModeIsActive()) {
+//            telemetry.addData("color", toString().valueOf(col.blue()));
+//            telemetry.update();
+//        }
 
         if (opModeIsActive()) {
+//            runtime.reset();
+//            while (opModeIsActive() && runtime.seconds() < 1) {
+//                ClawHand1.setPosition(0.1);
+//                ClawHand2.setPosition(0.1);
+//            }
+
+
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 1200) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
+
+
             telemetry.update();
             resetEncoders();
-
-            // go forward a little not looking at the distance value
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1600) {            // 1830
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1700) {            // 1830
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(-1000);
                 MotorBL.setVelocity(-1000);
                 MotorBR.setVelocity(-1000);
             }
-
-            zeroMotors();
             resetEncoders();
-//            telemetry.addData("Done with that Waiting ", "for 2 seconds"); // temp
-//            telemetry.update();
-//            sleep(2000);
-
+            zeroMotors();
             boolean FoundLeft = false;
             boolean FoundRight = false;
+            telemetry.addData("FoundLeft", FoundLeft);
+            telemetry.addData("FoundRight", FoundRight);
+            telemetry.addData("LeftRange", String.format("%.01f mm", LeftDistance.getDistance(DistanceUnit.MM)));
+            telemetry.addData("RightRange", String.format("%.01f mm", RightDistance.getDistance(DistanceUnit.MM)));
+            telemetry.update();
             // go forward more while looking at the distance value
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 600) { // go forward some distance
-                if (LeftDistance.getDistance(DistanceUnit.MM) < 250) {
+
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 900) { // go forward some distance
+                if (LeftDistance.getDistance(DistanceUnit.MM) < 200) {
                     FoundLeft = true;
                     break;
                 }
-                if (RightDistance.getDistance(DistanceUnit.MM) < 250) {
+                if (RightDistance.getDistance(DistanceUnit.MM) < 200) {
                     FoundRight = true;
                     break;
                 }
@@ -186,119 +198,30 @@ public class BlueBackboardAuto extends LinearOpMode {
                 MotorBR.setVelocity(-1000);
             }
             zeroMotors();
-            sleep(3000);
+            telemetry.update();
             if (FoundLeft) {
-                telemetry.addData("FoundLeft", FoundLeft);
-                telemetry.update();
-            }
-            if (FoundRight) {
-                telemetry.addData("FoundRight", FoundRight);
-                telemetry.update();
-            }
-//            telemetry.addData("rotations", toString().valueOf(MotorFL.getCurrentPosition()));
-//            telemetry.update();
-//            sleep(1000000);
-            if (FoundLeft) {
-                pixelLocal = 2; // left!!
+                pixelLocal = 1;
                 runtime.reset();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -1400) {
+                robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                while (opModeIsActive() && robotOrientation.firstAngle < 80) {
                     MotorFL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
+                    robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 160) {
+                while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 300) {
                     MotorFL.setVelocity(1000);
                     MotorFR.setVelocity(-1000);
                     MotorBL.setVelocity(-1000);
                     MotorBR.setVelocity(-1000);
+                    telemetry.addData("color", toString().valueOf(col.blue()));
+                    telemetry.update();
                 }
                 zeroMotors();
                 resetEncoders();
-                zeroMotors();
-                resetEncoders();
-                ClawHand.setPosition(0.4);
-                runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 2) {
-                    ClawHand.setPosition(0.4);
-                }
-            }
-
-            if (FoundRight) {
-                pixelLocal = 3; // right?
-                telemetry.update();
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 900) {
-                    MotorBR.setVelocity(1000);
-                    MotorFL.setVelocity(1000);
-                }
-                zeroMotors();
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 100) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                }
-                zeroMotors();
-                ClawHand.setPosition(0.4);
-                runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 2) {
-                    ClawHand.setPosition(0.4);
-                }
-            }
-            // not found assume center?
-            if (!FoundLeft && !FoundRight) {
-                zeroMotors();
-                pixelLocal = 1; // Left
-                resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() < 280) {
-                    MotorFL.setVelocity(1000);
-                    MotorFR.setVelocity(-1000);
-                    MotorBL.setVelocity(-1000);
-                    MotorBR.setVelocity(-1000);
-                }
-                zeroMotors();
-                ClawHand.setPosition(0.4);
-                runtime.reset();
-                while (opModeIsActive() && runtime.seconds() > 2) {
-                    ClawHand.setPosition(0.4);
-                }
-            }
-
-
-            // raise arm after dropping purple
-            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 180) {
-                ArmL.setVelocity(-1000);
-                ArmR.setVelocity(1000);
-            }
-            ArmL.setVelocity(0);
-            ArmR.setVelocity(0);
-            runtime.reset();
-            while (opModeIsActive() && runtime.seconds() < 2) {
-                ClawHand.setPosition(0.1);
-            }
-            // raise up more after picking up yellow pixel
-            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 300) {
-                ArmL.setVelocity(-1000);
-                ArmR.setVelocity(1000);
-            }
-            ArmL.setVelocity(0);
-            ArmR.setVelocity(0);
-
-            // done finding location and dropping purple
-            // now reverse from whatever location we are currently at
-
-            //reverse
-            zeroMotors();
-            resetEncoders();
-            if (FoundLeft) {
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -160) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -200) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -306,21 +229,69 @@ public class BlueBackboardAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                // move left
+                ClawHand2.setPosition(0.4);
+                runtime.reset();
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    ClawHand2.setPosition(0.4);
+                }
             }
 
-
-            // turn based on location
-            // -90 if center
-            // 180 if right
-            // 0 if left
-
-            // now facing left
-            // move left to wall till distance < ?
-            // more
-
+            if (FoundRight) {
+                pixelLocal = 3;
+                telemetry.update();
+                robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                while (opModeIsActive() && robotOrientation.firstAngle > -80) {
+                    MotorBR.setVelocity(1000);
+                    MotorFL.setVelocity(1000);
+                    robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                    telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
+                    telemetry.update();
+                }
+                zeroMotors();
+                resetEncoders();
+                while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 300) {
+                    MotorFL.setVelocity(1000);
+                    MotorFR.setVelocity(-1000);
+                    MotorBL.setVelocity(-1000);
+                    MotorBR.setVelocity(-1000);
+                    telemetry.addData("color", toString().valueOf(col.blue()));
+                    telemetry.update();
+                }
+                zeroMotors();
+                resetEncoders();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
+                    MotorFL.setVelocity(-1000);
+                    MotorFR.setVelocity(1000);
+                    MotorBL.setVelocity(1000);
+                    MotorBR.setVelocity(1000);
+                }
+                zeroMotors();
+                ClawHand2.setPosition(0.4);
+                runtime.reset();
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    ClawHand2.setPosition(0.4);
+                }
+            }
+            // not found assume center?
+            if (!FoundLeft && !FoundRight) {
+                pixelLocal = 2;
+                resetEncoders();
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -250) {
+                    MotorFL.setVelocity(-1000);
+                    MotorFR.setVelocity(1000);
+                    MotorBL.setVelocity(1000);
+                    MotorBR.setVelocity(1000);
+                }
+                zeroMotors();
+                resetEncoders();
+                ClawHand2.setPosition(0.4);
+                runtime.reset();
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    ClawHand2.setPosition(0.4);
+                }
+            }
+            ClawHand2.setPosition(0.1);
         }
-        visionPortal.close();
     }
 
     /**
@@ -341,10 +312,6 @@ public class BlueBackboardAuto extends LinearOpMode {
         }
 
     }   // end method initTfod()
-
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
     private void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();

@@ -29,8 +29,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Red Right Auto")
-public class redRightAuto extends LinearOpMode {
+@Autonomous(name = "Red Left Full Auto")
+public class redLeftFullAuto extends LinearOpMode {
 
     private DcMotorEx MotorFL; // this is the motor pluged into 0
     private DcMotorEx MotorFR; // this is the motor pluged into 1
@@ -152,7 +152,7 @@ public class redRightAuto extends LinearOpMode {
 
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 1200) {
+            while (ArmR.getCurrentPosition() < 200) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
@@ -310,6 +310,13 @@ public class redRightAuto extends LinearOpMode {
                 telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
                 telemetry.update();
             }
+            resetEncoders();
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
+                MotorFL.setVelocity(-1000);
+                MotorFR.setVelocity(1000);
+                MotorBL.setVelocity(1000);
+                MotorBR.setVelocity(1000);
+            }
 
             zeroMotors();
             resetEncoders();
@@ -320,32 +327,39 @@ public class redRightAuto extends LinearOpMode {
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(-1000);
             }
-            runtime.reset();
+            zeroMotors();
+            robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            while (opModeIsActive() && robotOrientation.firstAngle > -89.9) {
+                MotorFL.setVelocity(300);
+                MotorBR.setVelocity(300);
+                robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
+                telemetry.update();
+            }
+            while (opModeIsActive() && robotOrientation.firstAngle < -90.1) {
+                MotorFL.setVelocity(-300);
+                MotorBR.setVelocity(-300);
+                robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
+                telemetry.update();
+            }
             //move to backboard
-            while (opModeIsActive() && runtime.seconds() < 1) {
-                MotorFL.setVelocity(1000);
-                MotorFR.setVelocity(-1000);
-                MotorBL.setVelocity(-1000);
-                MotorBR.setVelocity(-1000);
-                telemetry.update();
-            }
+            zeroMotors();
             resetEncoders();
-            while (opModeIsActive() && col.red() < 800 && MotorFL.getCurrentPosition() < 1800 || MotorFL.getCurrentPosition() < 1400) {
-                MotorFL.setVelocity(1000);
-                MotorFR.setVelocity(-1000);
-                MotorBL.setVelocity(-1000);
-                MotorBR.setVelocity(-1000);
+            while (opModeIsActive() && col.red() < 800 && MotorFL.getCurrentPosition() < 7000 || MotorFL.getCurrentPosition() < 2500) {
+                MotorFL.setVelocity(1500);
+                MotorFR.setVelocity(-1500);
+                MotorBL.setVelocity(-1500);
+                MotorBR.setVelocity(-1500);
                 telemetry.addData("color", toString().valueOf(col.red()));
+                telemetry.addData("count", toString().valueOf(MotorFL.getCurrentPosition()));
                 telemetry.update();
             }
-            runtime.reset();
-            boolean missedLine = false;
-            while (opModeIsActive() && col.red() < 800 && MotorFL.getCurrentPosition() > 1800 && runtime.seconds() < 2) {
+            while (opModeIsActive() && col.red() < 800 && MotorFL.getCurrentPosition() > 7000) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
-                missedLine = true;
             }
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() > -400) {
@@ -372,6 +386,13 @@ public class redRightAuto extends LinearOpMode {
                 telemetry.addLine(toString().valueOf(robotOrientation.firstAngle));
                 telemetry.update();
             }
+            zeroMotors();
+            while (ArmR.getCurrentPosition() < 1200) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
             //move all the way to the left of the backboard
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             boolean found;
@@ -456,39 +477,6 @@ public class redRightAuto extends LinearOpMode {
                 MotorBL.setVelocity(1000);
                 MotorBR.setVelocity(1000);
                 telemetry.update();
-            }
-            zeroMotors();
-            if (pixelLocal != 1) {
-                MotorFL.setVelocity(500);
-                MotorFR.setVelocity(500);
-                MotorBL.setVelocity(500);
-                MotorBR.setVelocity(-500);
-            }
-
-            runtime.reset();
-            double seconds = 2;
-            if (pixelLocal == 2) seconds = 3;
-            while (opModeIsActive() && runtime.seconds() < seconds && pixelLocal != 1) {
-                currentDetections = aprilTag.getDetections();
-                if (currentDetections.size() != 0) {
-                    runtime.reset();
-                }
-            }
-            resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -1000 && pixelLocal == 1) {
-                MotorFL.setVelocity(-500);
-                MotorFR.setVelocity(-500);
-                MotorBL.setVelocity(-500);
-                MotorBR.setVelocity(500);
-            }
-            zeroMotors();
-            ClawArm.setPosition(0.4);
-            resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1200) {
-                MotorFL.setVelocity(1000);
-                MotorFR.setVelocity(-1000);
-                MotorBL.setVelocity(-1000);
-                MotorBR.setVelocity(-1000);
             }
             zeroMotors();
         }
