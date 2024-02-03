@@ -41,7 +41,8 @@ public class blueRightAuto extends LinearOpMode {
     private DcMotorEx PullDownL;
     private DcMotorEx PullDownR;
     private Servo ClawArm;
-    private Servo ClawHand;
+    private Servo ClawHand1;
+    private Servo ClawHand2;
     private Servo servoTest;
     private DistanceSensor LeftDistance;
     private DistanceSensor RightDistance;
@@ -90,7 +91,8 @@ public class blueRightAuto extends LinearOpMode {
         PullDownL = hardwareMap.get(DcMotorEx.class, "PullDownL");
         PullDownR = hardwareMap.get(DcMotorEx.class, "PullDownR");
         ClawArm = hardwareMap.get(Servo.class, "ClawArm");
-        ClawHand = hardwareMap.get(Servo.class, "ClawHand");
+        ClawHand1 = hardwareMap.get(Servo.class, "ClawHand1");
+        ClawHand2 = hardwareMap.get(Servo.class, "ClawHand2");
         servoTest = hardwareMap.get(Servo.class, "ServoTest");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         col = hardwareMap.get(ColorSensor.class, "col");
@@ -116,9 +118,12 @@ public class blueRightAuto extends LinearOpMode {
         PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.update();
+        ClawHand1.setPosition(0.1);
+        ClawHand2.setPosition(0.1);
         waitForStart();
         runtime.reset();
-        ClawHand.setPosition(0.1);
+        ClawHand1.setPosition(0.1);
+        ClawHand2.setPosition(0.1);
 
         short pixelLocal = -1;
 
@@ -138,6 +143,23 @@ public class blueRightAuto extends LinearOpMode {
 //        }
 
         if (opModeIsActive()) {
+//            runtime.reset();
+//            while (opModeIsActive() && runtime.seconds() < 1) {
+//                ClawHand1.setPosition(0.1);
+//                ClawHand2.setPosition(0.1);
+//            }
+
+
+            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            while (ArmR.getCurrentPosition() < 1200) {
+                ArmL.setVelocity(-1000);
+                ArmR.setVelocity(1000);
+            }
+            ArmL.setVelocity(0);
+            ArmR.setVelocity(0);
+
+
             telemetry.update();
             resetEncoders();
             while (opModeIsActive() && MotorFL.getCurrentPosition() < 1700) {            // 1830
@@ -157,12 +179,12 @@ public class blueRightAuto extends LinearOpMode {
             telemetry.update();
             // go forward more while looking at the distance value
 
-            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 1200) { // go forward some distance
-                if (LeftDistance.getDistance(DistanceUnit.MM) < 500) {
+            while (opModeIsActive() && col.blue() < 1200 && MotorFL.getCurrentPosition() < 900) { // go forward some distance
+                if (LeftDistance.getDistance(DistanceUnit.MM) < 200) {
                     FoundLeft = true;
                     break;
                 }
-                if (RightDistance.getDistance(DistanceUnit.MM) < 500) {
+                if (RightDistance.getDistance(DistanceUnit.MM) < 200) {
                     FoundRight = true;
                     break;
                 }
@@ -200,7 +222,7 @@ public class blueRightAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
+                while (opModeIsActive() && MotorFL.getCurrentPosition() > -200) {
                     MotorFL.setVelocity(-1000);
                     MotorFR.setVelocity(1000);
                     MotorBL.setVelocity(1000);
@@ -208,10 +230,10 @@ public class blueRightAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                ClawHand.setPosition(0.4);
+                ClawHand2.setPosition(0.4);
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() < 2) {
-                    ClawHand.setPosition(0.4);
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    ClawHand2.setPosition(0.4);
                 }
             }
 
@@ -245,10 +267,10 @@ public class blueRightAuto extends LinearOpMode {
                     MotorBR.setVelocity(1000);
                 }
                 zeroMotors();
-                ClawHand.setPosition(0.4);
+                ClawHand2.setPosition(0.4);
                 runtime.reset();
                 while (opModeIsActive() && runtime.seconds() < 1) {
-                    ClawHand.setPosition(0.4);
+                    ClawHand2.setPosition(0.4);
                 }
             }
             // not found assume center?
@@ -263,22 +285,13 @@ public class blueRightAuto extends LinearOpMode {
                 }
                 zeroMotors();
                 resetEncoders();
-                ClawHand.setPosition(0.4);
+                ClawHand2.setPosition(0.4);
                 runtime.reset();
-                while (opModeIsActive() && runtime.seconds() > 1) {
-                    ClawHand.setPosition(0.4);
+                while (opModeIsActive() && runtime.seconds() < 1) {
+                    ClawHand2.setPosition(0.4);
                 }
             }
-            //move to yellow pixel
-            ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 200) {
-                ArmL.setVelocity(-1000);
-                ArmR.setVelocity(1000);
-            }
-            ArmL.setVelocity(0);
-            ArmR.setVelocity(0);
-            zeroMotors();
+            ClawHand2.setPosition(0.1);
         }
     }
 

@@ -152,7 +152,7 @@ public class redRightAuto extends LinearOpMode {
 
             ArmR.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             ArmR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while (ArmR.getCurrentPosition() < 1000) {
+            while (ArmR.getCurrentPosition() < 1200) {
                 ArmL.setVelocity(-1000);
                 ArmR.setVelocity(1000);
             }
@@ -294,7 +294,7 @@ public class redRightAuto extends LinearOpMode {
             ClawHand2.setPosition(0.1);
             // backup so that we do not hit them
             resetEncoders();
-            while (opModeIsActive() && MotorFL.getCurrentPosition() > -100) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() > -150) {
                 MotorFL.setVelocity(-1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
