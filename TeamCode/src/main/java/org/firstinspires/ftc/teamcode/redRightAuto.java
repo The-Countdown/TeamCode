@@ -314,7 +314,7 @@ public class redRightAuto extends LinearOpMode {
             zeroMotors();
             resetEncoders();
             //move back to wall
-            while (opModeIsActive() && RightDistance.getDistance(DistanceUnit.MM) > 200) {
+            while (opModeIsActive() && MotorFL.getCurrentPosition() < 1850) {
                 MotorFL.setVelocity(1000);
                 MotorFR.setVelocity(1000);
                 MotorBL.setVelocity(1000);
