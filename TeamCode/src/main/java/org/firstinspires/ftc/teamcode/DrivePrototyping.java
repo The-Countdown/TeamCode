@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -8,6 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 @TeleOp(name = "TeleOp (test)")
 public class DrivePrototyping extends LinearOpMode {
@@ -36,6 +40,14 @@ public class DrivePrototyping extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
         MotorFL = hardwareMap.get(DcMotorEx.class, "MotorFL"); // this is the motor pluged into 0
         MotorFR = hardwareMap.get(DcMotorEx.class, "MotorFR"); // this is the motor pluged into 1
         MotorBL = hardwareMap.get(DcMotorEx.class, "MotorBL"); // this is the motor pluged into 2
@@ -52,6 +64,8 @@ public class DrivePrototyping extends LinearOpMode {
         Color = hardwareMap.get(ColorSensor.class, "col");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
+        imu.initialize(parameters);
+
         telemetry.addData("Status", "Initialized");
 
         MotorFL.setDirection(DcMotorEx.Direction.FORWARD);
@@ -59,10 +73,10 @@ public class DrivePrototyping extends LinearOpMode {
         MotorBL.setDirection(DcMotorEx.Direction.REVERSE);
         MotorBR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        MotorFL.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        MotorBL.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        MotorFL.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        MotorFR.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        MotorBL.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        MotorBR.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         ArmL.setDirection(DcMotorEx.Direction.FORWARD);
         ArmR.setDirection(DcMotorEx.Direction.FORWARD);
@@ -73,10 +87,8 @@ public class DrivePrototyping extends LinearOpMode {
         PullDownL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         PullDownR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double MotorPowerLY1 = 0;
-        double MotorPowerLX1 = 0;
-        double MotorPowerRX1 = 0;
-        double MotorPowerRY1 = 0;
+        double MotorForwards = 0;
+        double MotorSideways = 0;
 
         boolean ModeToggle = false;
 
@@ -89,6 +101,7 @@ public class DrivePrototyping extends LinearOpMode {
 
         telemetry.update();
         waitForStart();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         // PlaneAngle.setPosition(0.42);
         while (opModeIsActive()) {
             boolean ButtonX1 = gamepad1.x;
@@ -129,8 +142,8 @@ public class DrivePrototyping extends LinearOpMode {
             int MotorBREncoder = MotorBR.getCurrentPosition();
 
             // input for controller 1
-            MotorPowerLY1 = 2500 * Math.pow(-this.gamepad1.right_stick_y, 3);
-            MotorPowerRX1 = 2500 * Math.pow(-this.gamepad1.right_stick_x, 3);
+            MotorForwards = 2500 * Math.pow(-this.gamepad1.left_stick_y, 3);
+            MotorSideways = 2500 * Math.pow(-this.gamepad1.left_stick_x, 3);
 
             rightTrigger = 1550 * Math.pow(-this.gamepad1.right_trigger, 3);
             leftTrigger = 1550 * Math.pow(-this.gamepad1.left_trigger, 3);
@@ -151,12 +164,12 @@ public class DrivePrototyping extends LinearOpMode {
                 leftTrigger = 0;
             }
 
-            if (Math.abs(MotorPowerLY1) < 200) {
-                MotorPowerLY1 = 0;
+            if (Math.abs(MotorForwards) < 200) {
+                MotorForwards = 0;
             }
 
-            if (Math.abs(MotorPowerRX1) < 200) {
-                MotorPowerRX1 = 0;
+            if (Math.abs(MotorSideways) < 200) {
+                MotorSideways = 0;
             }
 
 
@@ -166,24 +179,37 @@ public class DrivePrototyping extends LinearOpMode {
                 angle += 360;
             }
 
+            //adjust motor powers
+            double angleInRadians  = Math.toRadians(angle);
+            double newForward = MotorForwards * Math.cos(angleInRadians) +
+                    MotorSideways * Math.sin(angleInRadians);
+            MotorSideways = -MotorForwards * Math.sin(angleInRadians) +
+                    MotorSideways * Math.cos(angleInRadians);
+            MotorForwards = newForward;
 
-            // use clamped angle to offset our motor powers
-            if (angle > 180) {
-                MotorPowerLY1 = MotorPowerLY1 * (360 - angle) / 180;
-                MotorPowerRX1 = MotorPowerRX1 * (360 - angle) / 180;
-            } else {
-                MotorPowerLY1 = MotorPowerLY1 * angle / 180;
-                MotorPowerRX1 = MotorPowerRX1 * angle / 180;
+            if (ButtonY1) {
+                ModeToggle = false;
+            }
+
+            if (ButtonX1) {
+                ModeToggle = true;
+            }
+
+            telemetry.addData("ModeToggle: ", ModeToggle);
+            if (ModeToggle) {
+                MotorForwards = MotorForwards / 2;
+                MotorSideways = MotorSideways / 2;
             }
 
             // set the motor powers
-            MotorFL.setVelocity(MotorPowerLY1 - MotorPowerRX1);
-            MotorFR.setVelocity(MotorPowerLY1 - MotorPowerRX1);
-            MotorBL.setVelocity(MotorPowerLY1 - MotorPowerRX1);
-            MotorBR.setVelocity(MotorPowerLY1 - MotorPowerRX1);
+            MotorFL.setVelocity(MotorForwards - MotorSideways - rightTrigger + leftTrigger);
+            MotorFR.setVelocity(MotorForwards + MotorSideways + rightTrigger - leftTrigger);
+            MotorBL.setVelocity(MotorForwards + MotorSideways - rightTrigger + leftTrigger);
+            MotorBR.setVelocity(MotorForwards - MotorSideways + rightTrigger - leftTrigger);
 
-            telemetry.addData("Status ly1: ", MotorPowerLY1);
-            telemetry.addData("Status rx1: ", MotorPowerRX1);
+            telemetry.addData("Forwards: ", MotorForwards);
+            telemetry.addData("Sideways: ", MotorSideways);
+            telemetry.addData("Angle", angle);
             telemetry.addData("Status ButtonX1: ", ButtonX1);
             telemetry.addData("Status rightTrigger1: ", TriggerR21);
             telemetry.addData("Status Mode1: ", ButtonOptions2);
@@ -197,21 +223,6 @@ public class DrivePrototyping extends LinearOpMode {
             telemetry.addData("Color Green:", Color.green());
             telemetry.update();
 
-
-
-            if (ButtonY1) {
-                ModeToggle = false;
-            }
-
-            if (ButtonX1) {
-                ModeToggle = true;
-            }
-
-            telemetry.addData("ModeToggle: ", ModeToggle);
-            if (ModeToggle) {
-                MotorPowerLY1 = MotorPowerLY1 / 2;
-                MotorPowerRX1 = MotorPowerRX1 / 2;
-            }
 
             if (ButtonDPright2) { // raise the arm
                 ClawArm.setPosition(0.15);
