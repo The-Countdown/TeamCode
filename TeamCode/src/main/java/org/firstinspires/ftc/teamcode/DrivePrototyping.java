@@ -195,6 +195,12 @@ public class DrivePrototyping extends LinearOpMode {
                 ModeToggle = true;
             }
 
+            // make right stick field oriented
+            if (Math.abs(gamepad1.right_stick_y) > .1 || Math.abs(gamepad1.right_stick_x) > .1) {
+                MotorForwards = 2500 * Math.pow(-this.gamepad1.right_stick_y, 3);
+                MotorSideways = 2500 * Math.pow(-this.gamepad1.right_stick_x, 3);
+            }
+
             telemetry.addData("ModeToggle: ", ModeToggle);
             if (ModeToggle) {
                 MotorForwards = MotorForwards / 2;
