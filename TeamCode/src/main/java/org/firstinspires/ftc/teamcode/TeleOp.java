@@ -27,11 +27,18 @@ public class TeleOp extends LinearOpMode {
                 turnR = 0;
             }
 
+            if (gamepad1.right_bumper) {
+                turnR = 800;
+            }
+
+            if (gamepad1.left_bumper) {
+                turnL = 800;
+            }
 
             double forwards = 2500 * Math.pow(-gamepad1.left_stick_y, 3);
             double sideways = 2500 * Math.pow(-gamepad1.left_stick_x, 3);
 
-            if (Math.abs(gamepad1.right_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1) {
+            if ((Math.abs(gamepad1.right_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1) && !gamepad1.right_stick_button) {
                 forwards = 2500 * Math.pow(-gamepad1.right_stick_y, 3);
                 sideways = 2500 * Math.pow(-gamepad1.right_stick_x, 3);
 
