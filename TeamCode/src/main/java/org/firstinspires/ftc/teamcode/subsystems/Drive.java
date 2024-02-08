@@ -16,8 +16,14 @@ public class Drive extends Robot.HardwareDevices {
     public void move(double forwardsVelocity, double sidewaysVelocity, double amount) {
         move(forwardsVelocity, sidewaysVelocity);
 
-        while (MotorFL.getCurrentPosition() < amount) {
-            //wait
+        if (amount > 0) {
+            while (Math.abs(MotorFL.getCurrentPosition()) < amount) {
+                //wait
+            }
+        } else {
+            while (MotorFL.getCurrentPosition() > amount) {
+                //wait
+            }
         }
 
         stop();
@@ -54,8 +60,14 @@ public class Drive extends Robot.HardwareDevices {
     public void moveField(double forwardsVelocity, double sidewaysVelocity, double amount) {
         moveField(forwardsVelocity, sidewaysVelocity);
 
-        while (MotorFL.getCurrentPosition() < amount) {
-            //wait
+        if (amount > 0) {
+            while (Math.abs(MotorFL.getCurrentPosition()) < amount) {
+                //wait
+            }
+        } else {
+            while (MotorFL.getCurrentPosition() > amount) {
+                //wait
+            }
         }
 
         stop();
