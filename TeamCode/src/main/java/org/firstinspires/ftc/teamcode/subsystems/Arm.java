@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-public class Arm extends Robot.Components{
+public class Arm extends Robot.HardwareDevices {
     public static final class positions {
         public static final double pickup = 0.5;
         public static final double outOfTheWay = 0.32;

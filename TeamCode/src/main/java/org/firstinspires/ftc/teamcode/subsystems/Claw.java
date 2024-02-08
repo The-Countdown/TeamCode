@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-public class Claw extends Robot.Components{
+public class Claw extends Robot.HardwareDevices {
     public static final class positions {
         public static final double open = 0.5;
         public static final double closed = 0.1;

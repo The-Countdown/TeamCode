@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Robot {
-    public static class Components {
+    public static class HardwareDevices {
         //drive base
         public static DcMotorEx MotorFL; // this is the motor plugged into 0
         public static DcMotorEx MotorFR; // this is the motor plugged into 1
@@ -41,29 +41,29 @@ public class Robot {
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        Components.MotorFL = hardwareMap.get(DcMotorEx.class, "MotorFL");
-        Components.MotorFR = hardwareMap.get(DcMotorEx.class, "MotorFR");
-        Components.MotorBL = hardwareMap.get(DcMotorEx.class, "MotorBL");
-        Components.MotorBR = hardwareMap.get(DcMotorEx.class, "MotorBR");
-        Components.LinearSlideL = hardwareMap.get(DcMotorEx.class, "ArmL");
-        Components.LinearSlideR = hardwareMap.get(DcMotorEx.class, "ArmR");
-        Components.Arm = hardwareMap.get(Servo.class, "ClawArm");
-        Components.ClawL = hardwareMap.get(Servo.class, "ClawHand1");
-        Components.ClawR = hardwareMap.get(Servo.class, "ClawHand2");
-        Components.imu = hardwareMap.get(BNO055IMU.class, "imu");
-        Components.col = hardwareMap.get(ColorSensor.class, "col");
-        Components.LeftDistance = hardwareMap.get(DistanceSensor.class, "LeftDistance");
-        Components.RightDistance = hardwareMap.get(DistanceSensor.class, "RightDistance");
+        HardwareDevices.MotorFL = hardwareMap.get(DcMotorEx.class, "MotorFL");
+        HardwareDevices.MotorFR = hardwareMap.get(DcMotorEx.class, "MotorFR");
+        HardwareDevices.MotorBL = hardwareMap.get(DcMotorEx.class, "MotorBL");
+        HardwareDevices.MotorBR = hardwareMap.get(DcMotorEx.class, "MotorBR");
+        HardwareDevices.LinearSlideL = hardwareMap.get(DcMotorEx.class, "ArmL");
+        HardwareDevices.LinearSlideR = hardwareMap.get(DcMotorEx.class, "ArmR");
+        HardwareDevices.Arm = hardwareMap.get(Servo.class, "ClawArm");
+        HardwareDevices.ClawL = hardwareMap.get(Servo.class, "ClawHand1");
+        HardwareDevices.ClawR = hardwareMap.get(Servo.class, "ClawHand2");
+        HardwareDevices.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        HardwareDevices.col = hardwareMap.get(ColorSensor.class, "col");
+        HardwareDevices.LeftDistance = hardwareMap.get(DistanceSensor.class, "LeftDistance");
+        HardwareDevices.RightDistance = hardwareMap.get(DistanceSensor.class, "RightDistance");
 
-        Components.imu.initialize(parameters);
+        HardwareDevices.imu.initialize(parameters);
 
-        Components.MotorFL.setDirection(DcMotorEx.Direction.FORWARD);
-        Components.MotorFR.setDirection(DcMotorEx.Direction.REVERSE);
-        Components.MotorBL.setDirection(DcMotorEx.Direction.REVERSE);
-        Components.MotorBR.setDirection(DcMotorEx.Direction.REVERSE);
+        HardwareDevices.MotorFL.setDirection(DcMotorEx.Direction.FORWARD);
+        HardwareDevices.MotorFR.setDirection(DcMotorEx.Direction.REVERSE);
+        HardwareDevices.MotorBL.setDirection(DcMotorEx.Direction.REVERSE);
+        HardwareDevices.MotorBR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        Components.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
-        Components.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
+        HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
+        HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();

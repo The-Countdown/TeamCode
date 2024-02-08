@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-public class LinearSlide extends Robot.Components {
+public class LinearSlide extends Robot.HardwareDevices {
     public void stop() {
         LinearSlideR.setVelocity(0);
         LinearSlideL.setVelocity(0);

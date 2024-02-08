@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
-public class Drive extends Robot.Components {
+public class Drive extends Robot.HardwareDevices {
     public void stop() {
         MotorFL.setVelocity(0);
         MotorFR.setVelocity(0);
