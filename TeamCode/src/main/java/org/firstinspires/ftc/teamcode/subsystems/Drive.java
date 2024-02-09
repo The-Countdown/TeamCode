@@ -30,10 +30,10 @@ public class Drive extends Robot.HardwareDevices {
     }
 
     public void move(double forwardsVelocity, double sidewaysVelocity, double turnR, double turnL){
-        MotorFL.setVelocity(forwardsVelocity - sidewaysVelocity - turnR + turnL);
-        MotorFR.setVelocity(forwardsVelocity + sidewaysVelocity + turnR - turnL);
-        MotorBL.setVelocity(forwardsVelocity + sidewaysVelocity - turnR + turnL);
-        MotorBR.setVelocity(forwardsVelocity - sidewaysVelocity + turnR - turnL);
+        MotorFL.setVelocity(forwardsVelocity - sidewaysVelocity + turnR - turnL);
+        MotorFR.setVelocity(forwardsVelocity + sidewaysVelocity - turnR + turnL);
+        MotorBL.setVelocity(forwardsVelocity + sidewaysVelocity + turnR - turnL);
+        MotorBR.setVelocity(forwardsVelocity - sidewaysVelocity - turnR + turnL);
     }
 
     public void moveField(double forwardsVelocity, double sidewaysVelocity){
@@ -88,10 +88,10 @@ public class Drive extends Robot.HardwareDevices {
                 sidewaysVelocity * Math.cos(angleInRadians);
         forwardsVelocity = newForward;
 
-        MotorFL.setVelocity(forwardsVelocity - sidewaysVelocity - turnR + turnL);
-        MotorFR.setVelocity(forwardsVelocity + sidewaysVelocity + turnR - turnL);
-        MotorBL.setVelocity(forwardsVelocity + sidewaysVelocity - turnR + turnL);
-        MotorBR.setVelocity(forwardsVelocity -  sidewaysVelocity + turnR - turnL);
+        MotorFL.setVelocity(forwardsVelocity - sidewaysVelocity + turnR - turnL);
+        MotorFR.setVelocity(forwardsVelocity + sidewaysVelocity - turnR + turnL);
+        MotorBL.setVelocity(forwardsVelocity + sidewaysVelocity + turnR - turnL);
+        MotorBR.setVelocity(forwardsVelocity - sidewaysVelocity - turnR + turnL);
     }
 
     public void turnToAngle(double velocity, double targetAngle) {
