@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 public class TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, telemetry);
         waitForStart();
         while (opModeIsActive()) {
 
@@ -85,6 +86,10 @@ public class TeleOp extends LinearOpMode {
             }
             if (gamepad2.a) {
                 robot.claw.closeClaw();
+            }
+
+            if (gamepad1.x) {
+                robot.vision1.telemetryAprilTag();
             }
 
             if (-gamepad2.right_stick_y > 0.5) {
