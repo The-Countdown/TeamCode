@@ -135,7 +135,7 @@ public class VisionPipeline extends Robot.HardwareDevices {
             this.angle = angle;
         }
     }
-    public List<CameraAngle> AprilTagPos() {
+    public List<CameraAngle> aprilTagPos() {
         double cameraWidth = visionPortal.getActiveCamera().getCameraCharacteristics().getDefaultSize(0).getWidth();
         double cameraFOV = 78; // not sure if this is correct
         List<CameraAngle> Angles = null;

@@ -85,4 +85,5 @@ public class Robot {
     public Claw claw = new Claw();
     public VisionPipeline vision1 = new VisionPipeline();
     public VisionPipeline vision2 = new VisionPipeline();
+    public Positioning robotPosition = new Positioning();
 }
