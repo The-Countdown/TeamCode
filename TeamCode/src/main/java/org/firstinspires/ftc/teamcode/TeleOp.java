@@ -17,7 +17,7 @@ public class TeleOp extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            //gamepad 1
+            // gamepad 1
             double turnR = 1500 * Math.pow(gamepad1.right_trigger, 3);
             double turnL = 1500 * Math.pow(gamepad1.left_trigger, 3);
 
@@ -26,6 +26,26 @@ public class TeleOp extends LinearOpMode {
             }
             if (turnR < 200) {
                 turnR = 0;
+            }
+
+            if (gamepad1.y) {
+                robot.vision1.telemetryAprilTag();
+            }
+
+            if (gamepad1.a) {
+                robot.vision1.aprilTagPos();
+            }
+
+            if (gamepad1.dpad_left) {
+                robot.vision1.streamingOn();
+            }
+
+            if (gamepad1.share) {
+                robot.vision2.telemetryAprilTag();
+            }
+
+            if (gamepad1.options) {
+                robot.vision2.aprilTagPos();
             }
 
             if (gamepad1.right_bumper) {
@@ -58,7 +78,7 @@ public class TeleOp extends LinearOpMode {
                 robot.drive.moveField(forwards, sideways, turnR, turnL);
             }
 
-            //gamepad 2
+            // gamepad 2
 
             if (gamepad2.right_bumper) {
                 robot.slide.move(2500);
@@ -86,10 +106,6 @@ public class TeleOp extends LinearOpMode {
             }
             if (gamepad2.a) {
                 robot.claw.closeClaw();
-            }
-
-            if (gamepad1.x) {
-                robot.vision1.telemetryAprilTag();
             }
 
             if (-gamepad2.right_stick_y > 0.5) {

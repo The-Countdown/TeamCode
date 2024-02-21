@@ -72,11 +72,11 @@ public class Robot {
         HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
         HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        vision1.VisionPipelineInit(hardwareMap, telemetry, "webcam 1", 90);
-        vision1.initTfod();
+        vision1.VisionPipelineInit(hardwareMap, telemetry, "Webcam 1", 0);
+        //vision1.initTfod();
         vision1.initAprilTag();
-        vision2.VisionPipelineInit(hardwareMap, telemetry, "webcam 2", 270);
-        vision2.initTfod();
+        vision2.VisionPipelineInit(hardwareMap, telemetry, "Webcam 2", 180);
+//        vision2.initTfod();
         vision2.initAprilTag();
     }
     public Drive drive = new Drive();
