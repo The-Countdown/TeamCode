@@ -15,7 +15,7 @@ public class basicauto extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
             robot.drive.turnToAngle(400, 90);
-            robot.drive.move(400,400,500);
+            robot.drive.move(400,0,500);
         }
     }
 }
