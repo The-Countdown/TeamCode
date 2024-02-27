@@ -4,6 +4,8 @@ import static java.lang.Math.decrementExact;
 import static java.lang.Math.tan;
 import static java.lang.Math.atan;
 
+import android.hardware.camera2.CameraDevice;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,6 +23,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +36,19 @@ public class VisionPipeline extends Robot.HardwareDevices {
     Telemetry telemetry;
     AprilTagProcessor aprilTag;
     String webcamName;
+    int viewportContainerId;
     Orientation robotOrientation;
     int cameraAngleOffset;
     Boolean init = false;
     Boolean streaming = false;
+    OpenCvCamera camera;
 
-    public void VisionPipelineInit(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset) {
+    public void VisionPipelineInit(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset, int viewportContainerId) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.webcamName = webcamName;
         this.robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        this.viewportContainerId = viewportContainerId;
         this.cameraAngleOffset = cameraAngleOffset;
         this.init = true;
     }
@@ -103,8 +111,24 @@ public class VisionPipeline extends Robot.HardwareDevices {
         this.aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         if (USE_WEBCAM) {
-            this.visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, webcamName), this.aprilTag);
+            this.camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerId);
+//            this.visionPortal = VisionPortal.easyCreateWithDefaults(
+//                    hardwareMap.get(WebcamName.class, webcamName), this.aprilTag);
+            this.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+            {
+                @Override
+                public void onOpened()
+                {
+//                    camera.setPipeline(new z());
+                    camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                }
+
+                @Override
+                public void onError(int errorCode)
+                {
+                    // nothing for now
+                }
+            });
         } else {
             this.visionPortal = VisionPortal.easyCreateWithDefaults(
                     BuiltinCameraDirection.BACK, this.aprilTag);

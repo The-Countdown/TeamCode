@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 
 public class Robot {
     public static class HardwareDevices {
@@ -72,12 +73,16 @@ public class Robot {
         HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
         HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        vision1.VisionPipelineInit(hardwareMap, telemetry, "Webcam 1", 0);
-        //vision1.initTfod();
-        vision1.initAprilTag();
-        vision2.VisionPipelineInit(hardwareMap, telemetry, "Webcam 2", 180);
+        // vision stuff (do not touch unless you know what you are doing)
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int[] viewportContainerIds = OpenCvCameraFactory.getInstance().splitLayoutForMultipleViewports(cameraMonitorViewId, 2, OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+
+        //vision1.VisionPipelineInit(hardwareMap, telemetry, "Webcam 1", 0);
+        // vision1.initTfod();
+        //vision1.initAprilTag();
+        //vision2.VisionPipelineInit(hardwareMap, telemetry, "Webcam 2", 180);
 //        vision2.initTfod();
-        vision2.initAprilTag();
+        //vision2.initAprilTag();
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
