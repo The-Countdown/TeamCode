@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
@@ -12,11 +13,11 @@ import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 public class TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, telemetry);
         waitForStart();
         while (opModeIsActive()) {
 
-            //gamepad 1
+            // gamepad 1
             double turnR = 1500 * Math.pow(gamepad1.right_trigger, 3);
             double turnL = 1500 * Math.pow(gamepad1.left_trigger, 3);
 
@@ -25,6 +26,26 @@ public class TeleOp extends LinearOpMode {
             }
             if (turnR < 200) {
                 turnR = 0;
+            }
+
+            if (gamepad1.y) {
+                robot.vision1.telemetryAprilTag();
+            }
+
+            if (gamepad1.a) {
+                robot.vision1.aprilTagPos();
+            }
+
+            if (gamepad1.dpad_left) {
+                robot.vision1.streamingOn();
+            }
+
+            if (gamepad1.share) {
+                robot.vision2.telemetryAprilTag();
+            }
+
+            if (gamepad1.options) {
+                robot.vision2.aprilTagPos();
             }
 
             if (gamepad1.right_bumper) {
@@ -57,7 +78,7 @@ public class TeleOp extends LinearOpMode {
                 robot.drive.moveField(forwards, sideways, turnR, turnL);
             }
 
-            //gamepad 2
+            // gamepad 2
 
             if (gamepad2.right_bumper) {
                 robot.slide.move(2500);

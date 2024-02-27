@@ -8,6 +8,12 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+
 public class Robot {
     public static class HardwareDevices {
         //drive base
@@ -30,9 +36,10 @@ public class Robot {
         public static DistanceSensor LeftDistance;
         public static DistanceSensor RightDistance;
         public static ColorSensor col;
+        public static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     }
 
-    public Robot(HardwareMap hardwareMap) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -64,9 +71,19 @@ public class Robot {
 
         HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
         HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
+
+        vision1.VisionPipelineInit(hardwareMap, telemetry, "Webcam 1", 0);
+        //vision1.initTfod();
+        vision1.initAprilTag();
+        vision2.VisionPipelineInit(hardwareMap, telemetry, "Webcam 2", 180);
+//        vision2.initTfod();
+        vision2.initAprilTag();
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
     public Arm arm = new Arm();
     public Claw claw = new Claw();
+    public VisionPipeline vision1 = new VisionPipeline();
+    public VisionPipeline vision2 = new VisionPipeline();
+    public Positioning robotPosition = new Positioning();
 }
