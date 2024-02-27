@@ -95,56 +95,26 @@ public class Drive extends Robot.HardwareDevices {
     }
 
     public void turnToAngle(double velocity, double targetAngle) {
-        double angle = imu.getAngularOrientation().firstAngle;
-
-        while (angle < 0) {
-            angle += 360;
-        }
-
-        while (angle > 360) {
-            angle -= 360;
-        }
-
-        double error = angle - targetAngle;
-        while (error < -180) {
-            error += 360;
-        }
-
-        while (error > 180) {
-            error -= 360;
-        }
-
-        while (error > 1) {
-            angle = imu.getAngularOrientation().firstAngle;
-            while (angle < 0) {
-                angle += 360;
-            }
+        double angle;
+        do {
+            angle = -imu.getAngularOrientation().firstAngle;
 
             while (angle > 360) {
                 angle -= 360;
             }
 
-            error = angle - targetAngle;
-            while (error < -180) {
-                error += 360;
+            while (angle < 0) {
+                angle += 360;
             }
 
-            while (error > 180) {
-                error -= 360;
-            }
-
-            if (error > 0) {
-                MotorFL.setVelocity(-velocity);
-                MotorFR.setVelocity(velocity);
-                MotorBL.setVelocity(-velocity);
-                MotorBR.setVelocity(velocity);
+            if (angle < targetAngle) {
+                move(0, 0, velocity, -velocity);
+            } else if (angle > targetAngle - 1) {
+                move(0, 0, -velocity, velocity);
             } else {
-                MotorFL.setVelocity(velocity);
-                MotorFR.setVelocity(-velocity);
-                MotorBL.setVelocity(velocity);
-                MotorBR.setVelocity(-velocity);
+                stop();
             }
-        }
+        } while (MotorFL.getVelocity() != 0);
         stop();
     }
 }
