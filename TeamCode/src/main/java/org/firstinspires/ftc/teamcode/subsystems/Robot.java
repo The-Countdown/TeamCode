@@ -10,12 +10,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.TeleOp;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
 public class Robot {
+    HardwareMap hardwareMap;
+    Telemetry telemetry;
     public static class HardwareDevices {
         //drive base
         public static DcMotorEx MotorFL; // this is the motor plugged into 0
@@ -41,6 +45,10 @@ public class Robot {
     }
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
+
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -73,22 +81,17 @@ public class Robot {
         HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
         HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        // vision stuff (do not touch unless you know what you are doing)
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        int[] viewportContainerIds = OpenCvCameraFactory.getInstance().splitLayoutForMultipleViewports(cameraMonitorViewId, 2, OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+        int[] visionPortalContainers = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.VERTICAL);
+        VisionPortal[] visionPortals = new VisionPortal[2];
 
-        //vision1.VisionPipelineInit(hardwareMap, telemetry, "Webcam 1", 0);
-        // vision1.initTfod();
-        //vision1.initAprilTag();
-        //vision2.VisionPipelineInit(hardwareMap, telemetry, "Webcam 2", 180);
-//        vision2.initTfod();
-        //vision2.initAprilTag();
+        vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
+        vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1]);
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
     public Arm arm = new Arm();
     public Claw claw = new Claw();
-    public VisionPipeline vision1 = new VisionPipeline();
-    public VisionPipeline vision2 = new VisionPipeline();
+    public VisionPipeline vision1;
+    public VisionPipeline vision2;
     public Positioning robotPosition = new Positioning();
 }

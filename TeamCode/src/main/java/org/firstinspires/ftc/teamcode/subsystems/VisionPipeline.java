@@ -5,6 +5,7 @@ import static java.lang.Math.tan;
 import static java.lang.Math.atan;
 
 import android.hardware.camera2.CameraDevice;
+import android.util.Size;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -29,6 +30,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 public class VisionPipeline extends Robot.HardwareDevices {
     HardwareMap hardwareMap;
     TfodProcessor tfod;
@@ -40,109 +43,45 @@ public class VisionPipeline extends Robot.HardwareDevices {
     Orientation robotOrientation;
     int cameraAngleOffset;
     Boolean init = false;
-    Boolean streaming = false;
     OpenCvCamera camera;
 
-    public void VisionPipelineInit(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset, int viewportContainerId) {
+    public VisionPipeline(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset, int viewportContainerId, VisionPortal visionPortal) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.webcamName = webcamName;
-        this.robotOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //this.robotOrientation = imu.getAngularOrientation();
         this.viewportContainerId = viewportContainerId;
         this.cameraAngleOffset = cameraAngleOffset;
+        this.visionPortal = visionPortal;
+
+        initAprilTag();
+
         this.init = true;
     }
 
-    public void streamingOn() {
-        if (!this.streaming) {
-            this.visionPortal.resumeStreaming();
-            this.streaming = true;
-        }
-    }
-
-    public void streamingOff() {
-        if (this.streaming) {
-            this.visionPortal.stopStreaming();
-            this.streaming = false;
-        }
-    }
-
-    public void toggleStreaming() {
-        if (this.streaming) {
-            this.visionPortal.stopStreaming();
-            this.streaming = false;
-        } else {
-            this.visionPortal.resumeStreaming();
-            this.streaming = true;
-        }
-    }
-    public void initTfod() {
-        // Create the TensorFlow processor the easy way.
-        this.tfod = TfodProcessor.easyCreateWithDefaults();
-
-        // Create the vision portal the easy way.
-        if (USE_WEBCAM) {
-            this.visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, webcamName), tfod);
-        } else {
-            this.visionPortal = VisionPortal.easyCreateWithDefaults(
-                    BuiltinCameraDirection.BACK, tfod);
-        }
-
-    }   // end method initTfod()
-    public void telemetryTfod() {
-        List<Recognition> currentRecognitions = this.tfod.getRecognitions();
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }   // end for() loop
-        telemetry.update();
-    }   // end method telemetryTfod()
-
     public void initAprilTag() {
-        this.aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-
-        if (USE_WEBCAM) {
-            this.camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerId);
-//            this.visionPortal = VisionPortal.easyCreateWithDefaults(
-//                    hardwareMap.get(WebcamName.class, webcamName), this.aprilTag);
-            this.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-            {
-                @Override
-                public void onOpened()
-                {
-//                    camera.setPipeline(new z());
-                    camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-                }
-
-                @Override
-                public void onError(int errorCode)
-                {
-                    // nothing for now
-                }
-            });
-        } else {
-            this.visionPortal = VisionPortal.easyCreateWithDefaults(
-                    BuiltinCameraDirection.BACK, this.aprilTag);
+        try {
+            aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+            VisionPortal.Builder builder = new VisionPortal.Builder();
+            builder.setCamera(hardwareMap.get(WebcamName.class, webcamName));
+            builder.setCameraResolution(new Size(320, 240));
+            builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
+            builder.addProcessor(aprilTag);
+            builder.setLiveViewContainerId(viewportContainerId);
+            visionPortal = builder.build();
+            visionPortal.resumeStreaming();
+        } catch (Exception e) {
+            while (true) {
+                telemetry.addData("cam error:" + e.getMessage() + "\nwebcamName: " + webcamName + "\nviewportContainerId: " + viewportContainerId, "");
+                telemetry.update();
+            }
         }
-        // find a way to get camera is streaming
-    }   // end method initAprilTag()
+    }
 
     /**
      * Add telemetry about AprilTag detections.
      */
     public void telemetryAprilTag() {
-        if (!this.streaming) {
-            this.streamingOn();
-        }
         List<AprilTagDetection> currentDetections = this.aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
@@ -165,7 +104,6 @@ public class VisionPipeline extends Robot.HardwareDevices {
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
         telemetry.update();
-        this.streamingOff();
     }   // end method telemetryAprilTag()
 
     private List<AprilTagDetection> AprilTagDetect() {
@@ -202,7 +140,7 @@ public class VisionPipeline extends Robot.HardwareDevices {
             telemetry.addData("targetPosition: ", tx);
             telemetry.addData("targetPosition: ", ty);
             telemetry.addData("Detection Angle: ", angle);
-            telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
+            //telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
             telemetry.addData("cameraAngleOffset", cameraAngleOffset);
             Angles.add(new CameraAngle(detection.id, angle));
         }
