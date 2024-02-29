@@ -77,35 +77,6 @@ public class VisionPipeline extends Robot.HardwareDevices {
             }
         }
     }
-
-    /**
-     * Add telemetry about AprilTag detections.
-     */
-    public void telemetryAprilTag() {
-        List<AprilTagDetection> currentDetections = this.aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-        telemetry.update();
-    }   // end method telemetryAprilTag()
-
     private List<AprilTagDetection> AprilTagDetect() {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         return currentDetections;
@@ -122,8 +93,7 @@ public class VisionPipeline extends Robot.HardwareDevices {
     public List<CameraAngle> aprilTagPos() {
         telemetry.addData("Trying to ", "detect april tags");
         CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
-        double width = camera.getDefaultSize(camera.getAndroidFormats()[camera.getAndroidFormats().length - 1]).getWidth(); // width of the camera
-        width = camera.getAllCameraModes().get(0).size.getWidth();
+        double width = 320;
         double fov = Math.toRadians(78); // field of view of the camera in radians
         List<CameraAngle> Angles = new ArrayList<>();
         for (AprilTagDetection detection : this.AprilTagDetect()) {

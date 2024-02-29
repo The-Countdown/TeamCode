@@ -28,16 +28,8 @@ public class TeleOp extends LinearOpMode {
                 turnR = 0;
             }
 
-//            while (gamepad1.y) {
-//                robot.vision1.telemetryAprilTag();
-//            }
-
-            if (gamepad1.a) {
-                robot.vision1.aprilTagPos();
-            }
-
             if (gamepad1.share) {
-                robot.vision2.telemetryAprilTag();
+                robot.vision1.aprilTagPos();
             }
 
             if (gamepad1.options) {
