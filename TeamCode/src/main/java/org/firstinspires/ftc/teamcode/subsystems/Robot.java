@@ -81,7 +81,7 @@ public class Robot {
         HardwareDevices.LinearSlideL.setDirection(DcMotorEx.Direction.FORWARD);
         HardwareDevices.LinearSlideR.setDirection(DcMotorEx.Direction.REVERSE);
 
-        int[] visionPortalContainers = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.VERTICAL);
+        int[] visionPortalContainers = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
         VisionPortal[] visionPortals = new VisionPortal[2];
 
         vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
