@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
+import org.firstinspires.ftc.teamcode.subsystems.VisionPipeline;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "TeleOp")
 public class TeleOp extends LinearOpMode {
@@ -29,11 +30,12 @@ public class TeleOp extends LinearOpMode {
             }
 
             if (gamepad1.share) {
-                robot.vision1.aprilTagPos();
+//                robot.vision1.aprilTagPos();
             }
 
             if (gamepad1.options) {
-                robot.vision2.aprilTagPos();
+//                robot.vision2.aprilTagPos();
+                robot.robotPosition.getPosition(robot.vision1, robot.vision2, telemetry);
             }
 
             if (gamepad1.right_bumper) {

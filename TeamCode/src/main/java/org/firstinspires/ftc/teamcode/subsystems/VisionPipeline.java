@@ -91,30 +91,31 @@ public class VisionPipeline extends Robot.HardwareDevices {
         }
     }
     public List<CameraAngle> aprilTagPos() {
-        telemetry.addData("Trying to ", "detect april tags");
+//        telemetry.addData("Trying to ", "detect april tags");
         CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
         double width = 320;
         double fov = Math.toRadians(78); // field of view of the camera in radians
         List<CameraAngle> Angles = new ArrayList<>();
         for (AprilTagDetection detection : this.AprilTagDetect()) {
             double tx = detection.center.x;
-            double ty = detection.center.y;
-            double angle = Math.abs(Math.toDegrees(Math.atan(ty / Math.abs((width / 2) - tx) / Math.tan(fov / 2))) - 90);
+            int focal_length = 500;  // Focal length of the camera
+
+            double angle = Math.atan((tx - (width / 2)) / (double) focal_length) * 180 / Math.PI; // I think that this is wrong
 //            angle = robotOrientation.firstAngle + (cameraAngleOffset + angle);
 //            if (angle < 0) {
 //                angle = 360 + angle;
 //            }
-            telemetry.addData("April id: ", detection.id);
-            telemetry.addData("Camera Width: ", width);
-            telemetry.addData("Camera FOV (radians)", fov);
-            telemetry.addData("targetPosition: ", tx);
-            telemetry.addData("targetPosition: ", ty);
-            telemetry.addData("Detection Angle: ", angle);
+//            telemetry.addData("April id: ", detection.id);
+//            telemetry.addData("Camera Width: ", width);
+//            telemetry.addData("Camera FOV (radians)", fov);
+//            telemetry.addData("targetPosition: ", tx);
+//            telemetry.addData("targetPosition: ", ty);
+//            telemetry.addData("Detection Angle: ", angle);
             //telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
-            telemetry.addData("cameraAngleOffset", cameraAngleOffset);
+//            telemetry.addData("cameraAngleOffset", cameraAngleOffset);
             Angles.add(new CameraAngle(detection.id, angle));
         }
-        telemetry.update();
+//        telemetry.update();
         return Angles;
     }
 }
