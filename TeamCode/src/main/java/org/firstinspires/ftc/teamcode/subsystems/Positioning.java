@@ -29,7 +29,18 @@ public class Positioning {
             th2 = Math.toRadians(th2);
 
 //            (y - p2x) * tan(th2) + p2y = (y - p1x) * tan(th1) + p1y
-            double y = ((point2y + (point1x - point2x) * Math.tan(th2)) - point1y) / Math.tan(th1) + point1x;
+//            (y - p2x) * k + p2y = (y - p1x) * p + p1y
+
+
+            double p = Math.tan(th1);
+            double k = Math.tan(th2);
+            double g = point2x;
+            double i = point2y;
+            double z = point1x;
+            double v = point1y;
+
+            //double y = ((point2y + (point1x - point2x) * Math.tan(th2)) - point1y) / Math.tan(th1) + point1x;
+            double y = (v + g * Math.tan(p) - z * Math.tan(k))/(Math.tan(p) - Math.tan(k));
 
             double x = Math.tan(th1) * y;
 

@@ -105,7 +105,7 @@ public class VisionPipeline extends Robot.HardwareDevices {
 //            if (angle < 0) {
 //                angle = 360 + angle;
 //            }
-//            telemetry.addData("April id: ", detection.id);
+//            telemetr y.addData("April id: ", detection.id);
 //            telemetry.addData("Camera Width: ", width);
 //            telemetry.addData("Camera FOV (radians)", fov);
 //            telemetry.addData("targetPosition: ", tx);
