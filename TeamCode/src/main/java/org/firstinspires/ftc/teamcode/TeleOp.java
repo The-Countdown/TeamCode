@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.subsystems.Positioning;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
@@ -35,7 +36,11 @@ public class TeleOp extends LinearOpMode {
 
             if (gamepad1.options) {
 //                robot.vision2.aprilTagPos();
-                robot.robotPosition.getPosition(robot.vision1, robot.vision2, telemetry);
+//                robot.robotPosition.getPosition(robot.vision1, robot.vision2, telemetry);
+                Positioning.RobotPosition robpos = robot.robotPosition.getPositionNew(robot.vision1, robot.vision2, telemetry);
+//                telemetry.addData("robpos x: ", robpos.x);
+//                telemetry.addData("robpos y: ", robpos.y);
+//                telemetry.update();
             }
 
             if (gamepad1.right_bumper) {
