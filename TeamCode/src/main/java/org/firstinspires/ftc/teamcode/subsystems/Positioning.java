@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.ArrayList;
@@ -7,7 +9,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Positioning {
+public class Positioning extends Robot.HardwareDevices {
+    private final int wheelDiameter = 90;
+    private final double wheelCircumference = Math.PI * wheelDiameter;
+    private final double motorRPM = 6000;
+    private final double gearRatio = 40;
+    private final double ticksPerRev = motorRPM/gearRatio;
+    private RobotPosition startingPosition = new RobotPosition(0, 0);
+    public RobotPosition getPositionEncoder(Telemetry telemetry) {
+        // get position using encoders
+        double motor1Pos = MotorFL.getCurrentPosition();
+        double motor2Pos = MotorFR.getCurrentPosition();
+        double motor3Pos = MotorBL.getCurrentPosition();
+        double motor4Pos = MotorBR.getCurrentPosition();
+
+        double motor1Vel = MotorFL.getVelocity();
+        double motor2Vel = MotorFR.getVelocity();
+        double motor3Vel = MotorBL.getVelocity();
+        double motor4Vel = MotorBR.getVelocity();
+
+        double distance1 = motor1Pos / ticksPerRev * wheelCircumference;
+        double distance2 = motor2Pos / ticksPerRev * wheelCircumference;
+        double distance3 = motor3Pos / ticksPerRev * wheelCircumference;
+        double distance4 = motor4Pos / ticksPerRev * wheelCircumference;
+
+        // Calculate the average distance
+        double avgDistance = (distance1 + distance2 + distance3 + distance4) / 4;
+
+        // Calculate the average velocity
+        double avgVelocity = (motor1Vel + motor2Vel + motor3Vel + motor4Vel) / 4;
+
+        // Get the current yaw angle from the IMU
+        double currentYawAngle = imu.getAngularOrientation().firstAngle;
+
+        // Calculate the sideways movement based on the difference in velocities of the front and back motors
+        double sidewaysMovement = (motor1Vel - motor3Vel + motor2Vel - motor4Vel) / 4;
+
+        // Update the robot's position based on the average distance, current yaw angle, and sideways movement
+        RobotPosition position = new RobotPosition(startingPosition.x + avgDistance * Math.cos(currentYawAngle) - sidewaysMovement * Math.sin(currentYawAngle),
+                startingPosition.y + avgDistance * Math.sin(currentYawAngle) + sidewaysMovement * Math.cos(currentYawAngle));
+
+        return position;
+    }
     public RobotPosition getPosition(VisionPipeline vision1, VisionPipeline vision2, Telemetry telemetry) {
         List<VisionPipeline.CameraAngle> angle1List = vision1.aprilTagPos();
         List<VisionPipeline.CameraAngle> angle2List = vision2.aprilTagPos();
