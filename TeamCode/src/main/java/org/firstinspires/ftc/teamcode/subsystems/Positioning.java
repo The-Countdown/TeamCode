@@ -64,10 +64,10 @@ public class Positioning {
         Map<Integer, String> aprilPosTable = new HashMap<>();
 
         // Add some key-value pairs to the dictionary
-        aprilPosTable.put(10, "36|144");
-        aprilPosTable.put(9, "30|144");
-        aprilPosTable.put(7, "144|30");
-        aprilPosTable.put(8, "144|48");
+        aprilPosTable.put(10, "33|0");
+        aprilPosTable.put(9, "39|0");
+        aprilPosTable.put(7, "143|103");
+        aprilPosTable.put(8, "143|100");
 
 
         List<VisionPipeline.AprilOffset> offsets1 = vision1.getData();
@@ -98,38 +98,21 @@ public class Positioning {
             double ypos = Integer.parseInt(parts[1]);
             telemetry.addData("y pos int: ", ypos);
 
-            // Convert the angles to radians
-            double pitchRad = Math.toRadians(offset.pitch);
-            double rollRad = Math.toRadians(offset.roll);
-            double yawRad = Math.toRadians(offset.yaw);
+//            robposx = xpos + ftcposex * (cos(yaw) * cos(pitch) + sin(roll) * sin(yaw) * sin(pitch)) - ftcposey * (cos(pitch) * sin(yaw) - cos(yaw) * sin(roll) * sin(pitch)) + ftcposez * cos(roll) * sin(pitch)
+//            robposy = ypos + ftcposex * (cos(roll) * sin(yaw)) + ftcposey * (cos(yaw) * cos(roll)) - ftcposez * sin(roll)
 
-            // Calculate the new x, y, and z coordinates based on the rotation
-            double newX = xpos * Math.cos(yawRad) * Math.cos(pitchRad) +
-                    ypos * (Math.cos(yawRad) * Math.sin(pitchRad) * Math.sin(rollRad) - Math.sin(yawRad) * Math.cos(rollRad)) +
-                    offset.ftcposz * (Math.cos(yawRad) * Math.sin(pitchRad) * Math.cos(rollRad) + Math.sin(yawRad) * Math.sin(rollRad));
-
-            double newY = xpos * Math.sin(yawRad) * Math.cos(pitchRad) +
-                    ypos * (Math.sin(yawRad) * Math.sin(pitchRad) * Math.sin(rollRad) + Math.cos(yawRad) * Math.cos(rollRad)) +
-                    offset.ftcposz * (Math.sin(yawRad) * Math.sin(pitchRad) * Math.cos(rollRad) - Math.cos(yawRad) * Math.sin(rollRad));
-
-            double newZ = -xpos * Math.sin(pitchRad) +
-                    ypos * Math.cos(pitchRad) * Math.sin(rollRad) +
-                    offset.ftcposz * Math.cos(pitchRad) * Math.cos(rollRad);
-
-            // Update the position
-            newX = xpos + newX;
-            newY = xpos + newY;
-            newZ = newZ;
-
-            telemetry.addData("stuff: ", String.format("New position: x = " + offset.ftcposx + ", y = " + offset.ftcposy + ", z = " + offset.ftcposz));
+            telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", offset.pitch, offset.roll, offset.yaw));
             if (lastx == 0) {
-                robotpos.x = xpos + newX;
+                robotpos.x = xpos + Math.tan(offset.yaw) * offset.ftcposy + offset.ftcposx;
+                //                robotpos.x = robotPosX;
+
             } else {
 //                robotpos.x = (xpos + offset.ftcposx) + lastx / 2;
             }
             telemetry.addData("robot pos x", robotpos.x);
             if (lasty == 0) {
-                robotpos.y = ypos + newY;
+                robotpos.y = ypos + Math.tan(offset.yaw) * offset.ftcposy;
+//                robotpos.y = robotPosY;
             } else {
 //                robotpos.y = (xpos + offset.ftcposy) + lastx / 2;
             }
