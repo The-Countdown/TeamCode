@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 // there is still camera error stuff that i need to fix
 import static java.lang.Math.decrementExact;
+import static java.lang.Math.nextAfter;
 import static java.lang.Math.tan;
 import static java.lang.Math.atan;
 
@@ -90,22 +91,47 @@ public class VisionPipeline extends Robot.HardwareDevices {
             this.angle = angle;
         }
     }
+
+    class AprilOffset {
+        int id;
+        double ftcposx;
+        double ftcposy;
+        double ftcposz;
+        double pitch;
+        double roll;
+        double yaw;
+        public AprilOffset(int id, double ftcposx, double ftcposy, double ftcposz, double pitch, double roll, double yaw) {
+            this.id = id;
+            this.ftcposx = ftcposx;
+            this.ftcposy = ftcposy;
+            this.ftcposz = ftcposz;
+            this.pitch = pitch;
+            this.roll = roll;
+            this.yaw = yaw;
+        }
+    }
     public List<CameraAngle> aprilTagPos() {
 //        telemetry.addData("Trying to ", "detect april tags");
         CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
         double width = 320;
+        double height = 240;
         double fov = Math.toRadians(78); // field of view of the camera in radians
         List<CameraAngle> Angles = new ArrayList<>();
         for (AprilTagDetection detection : this.AprilTagDetect()) {
             double tx = detection.center.x;
+            double ty = detection.center.y;
             int focal_length = 500;  // Focal length of the camera
 
-            double angle = Math.atan((tx - (width / 2)) / (double) focal_length) * 180 / Math.PI; // I think that this is wrong
+            double angle = 0;
+            angle = Math.tan(width - tx / height - ty);
+            if (tx > (width / 2)) {
+                angle = -angle;
+            }
 //            angle = robotOrientation.firstAngle + (cameraAngleOffset + angle);
 //            if (angle < 0) {
 //                angle = 360 + angle;
 //            }
-//            telemetry.addData("April id: ", detection.id);
+//            telemetr y.addData("April id: ", detection.id);
 //            telemetry.addData("Camera Width: ", width);
 //            telemetry.addData("Camera FOV (radians)", fov);
 //            telemetry.addData("targetPosition: ", tx);
@@ -117,5 +143,24 @@ public class VisionPipeline extends Robot.HardwareDevices {
         }
 //        telemetry.update();
         return Angles;
+    }
+    public List<AprilOffset> getData() {
+//        telemetry.addData("Trying to ", "detect april tags");
+        CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
+        List<AprilOffset> offsets = new ArrayList();
+        for (AprilTagDetection detection : this.AprilTagDetect()) {
+
+//            telemetr y.addData("April id: ", detection.id);
+//            telemetry.addData("Camera Width: ", width);
+//            telemetry.addData("Camera FOV (radians)", fov);
+//            telemetry.addData("targetPosition: ", tx);
+//            telemetry.addData("targetPosition: ", ty);
+//            telemetry.addData("Detection Angle: ", angle);
+            //telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
+//            telemetry.addData("cameraAngleOffset", cameraAngleOffset);
+            offsets.add(new AprilOffset(detection.id, detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z, detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+        }
+//        telemetry.update();
+        return offsets;
     }
 }
