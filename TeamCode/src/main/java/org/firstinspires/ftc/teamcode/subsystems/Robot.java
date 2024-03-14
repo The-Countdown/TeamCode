@@ -1,21 +1,19 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.TeleOp;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.openftc.easyopencv.OpenCvCameraFactory;
+
+import java.time.LocalDateTime;
 
 public class Robot {
     HardwareMap hardwareMap;
@@ -94,4 +92,6 @@ public class Robot {
     public VisionPipeline vision1;
     public VisionPipeline vision2;
     public Positioning robotPosition = new Positioning();
+    @SuppressLint({"NewApi", "I changed the version, but this just won't go away."})
+    public PositionLogger positionLogger = new PositionLogger(this, "positionLog " + LocalDateTime.now() + ".csv");
 }
