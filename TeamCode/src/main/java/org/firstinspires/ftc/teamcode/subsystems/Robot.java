@@ -84,6 +84,9 @@ public class Robot {
 
         vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
         vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1]);
+        robotPosition = new Positioning(this, telemetry, vision1, vision2);
+        //positionLogger = new PositionLogger(this, "positionLog " + LocalDateTime.now() + ".csv");
+
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
@@ -91,7 +94,7 @@ public class Robot {
     public Claw claw = new Claw();
     public VisionPipeline vision1;
     public VisionPipeline vision2;
-    public Positioning robotPosition = new Positioning();
-    @SuppressLint({"NewApi", "I changed the version, but this just won't go away."})
-    public PositionLogger positionLogger = new PositionLogger(this, "positionLog " + LocalDateTime.now() + ".csv");
+    public Positioning robotPosition;
+    //public PositionLogger positionLogger;
+
 }

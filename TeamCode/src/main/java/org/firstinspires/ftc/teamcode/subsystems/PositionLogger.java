@@ -18,7 +18,7 @@ public class PositionLogger extends Robot.HardwareDevices {
     private void logPosition() {
         try {
             FileWriter writer = new FileWriter(filePath, true);
-            Positioning.RobotPosition position = robot.robotPosition.getPositionNew(robot.vision1, robot.vision2, robot.telemetry);
+            Positioning.RobotPosition position = robot.robotPosition.position;
             writer.write(position.x + "," + position.y + "\n");
             writer.close();
         } catch (IOException e) {

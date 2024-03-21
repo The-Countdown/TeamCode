@@ -30,17 +30,10 @@ public class TeleOp extends LinearOpMode {
                 turnR = 0;
             }
 
-            if (gamepad1.share) {
-//                robot.vision1.aprilTagPos();
-            }
-
             if (gamepad1.options) {
-//                robot.vision2.aprilTagPos();
-//                robot.robotPosition.getPosition(robot.vision1, robot.vision2, telemetry);
-                Positioning.RobotPosition robpos = robot.robotPosition.getPositionNew(robot.vision1, robot.vision2, telemetry);
-//                telemetry.addData("robpos x: ", robpos.x);
-//                telemetry.addData("robpos y: ", robpos.y);
-//                telemetry.update();
+                telemetry.addData("robpos x: ", robot.robotPosition.position.x);
+                telemetry.addData("robpos y: ", robot.robotPosition.position.y);
+                telemetry.update();
             }
 
             if (gamepad1.right_bumper) {
