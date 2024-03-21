@@ -163,8 +163,19 @@ public class Positioning extends Robot.HardwareDevices {
                             robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
                     }
                 }
-            } else {
-//                robotpos.x = ((xpos + offset.ftcposx) + lastx) / 2;
+            } else if (lastx != 0) {
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                    robotpos.x = robotpos.x + lastx / 2;
+                } else if (Objects.equals(aprilTag.direction, "south")) {
+                    robotpos.x = - aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                    robotpos.x = robotpos.x + lastx / 2;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
+
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
+                    robotpos.x = robotpos.x + lastx / 2;
+                }
             }
             telemetry.addData("robot pos x", robotpos.x);
             if (lasty == 0) {
@@ -180,11 +191,28 @@ public class Positioning extends Robot.HardwareDevices {
                         robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
                     }
                 }
-            } else {
-//                robotpos.y = ((xpos + offset.ftcposy) + lastx) / 2;
+            } else if (lasty != 0) {
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
+                    robotpos.y = - aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                    robotpos.y = robotpos.y + lasty / 2;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
+
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    if (offset.yaw >= 0) {
+                        robotpos.y = aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                        robotpos.y = robotpos.y + lasty / 2;
+                    } else if (offset.yaw <= 0) {
+                        robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
+                        robotpos.y = robotpos.y + lasty / 2;
+                    }
+                }
             }
+
             telemetry.addData("robot pos y", robotpos.y);
 
+            lastx = robotpos.x;
+            lasty = robotpos.y;
             telemetry.addData("last x", lastx);
             telemetry.addData("last y", lasty);
         }
