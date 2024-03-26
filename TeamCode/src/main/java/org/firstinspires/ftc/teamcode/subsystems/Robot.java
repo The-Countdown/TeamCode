@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.annotation.SuppressLint;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -14,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.VisionPortal;
 
-import java.time.LocalDateTime;
+import android.os.Environment;
 
 public class Robot {
     HardwareMap hardwareMap;
@@ -47,7 +45,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode opMode) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
-
+        this.opMode = opMode;
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -87,7 +85,7 @@ public class Robot {
         vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
         vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1]);
         robotPosition = new Positioning(this, telemetry, vision1, vision2, opMode);
-        //positionLogger = new PositionLogger(this, "positionLog " + LocalDateTime.now() + ".csv");
+        positionLogger = new PositionLogger(this, Environment.getExternalStorageDirectory().getAbsolutePath() + "/position.csv", opMode);
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
@@ -96,6 +94,6 @@ public class Robot {
     public VisionPipeline vision1;
     public VisionPipeline vision2;
     public Positioning robotPosition;
-    //public PositionLogger positionLogger;
+    public PositionLogger positionLogger;
 
 }

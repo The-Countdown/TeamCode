@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Timer;
@@ -8,10 +10,13 @@ import java.util.TimerTask;
 public class PositionLogger extends Robot.HardwareDevices {
     private Robot robot;
     private String filePath;
+    private LinearOpMode opMode;
+    private Timer timer;
 
-    public PositionLogger(Robot robot, String filePath) {
+    public PositionLogger(Robot robot, String filePath, LinearOpMode opMode) {
         this.robot = robot;
         this.filePath = filePath;
+        this.opMode = robot.opMode;
         startLogging();
     }
 
@@ -22,12 +27,13 @@ public class PositionLogger extends Robot.HardwareDevices {
             writer.write(position.x + "," + position.y + "\n");
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            robot.telemetry.addData("Error", e.getMessage());
+            robot.telemetry.update();
         }
     }
 
     private void startLogging() {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {

@@ -34,7 +34,7 @@ public class Positioning extends Robot.HardwareDevices {
         startPositioning();
     }
 
-    public void startPositioning() {
+    private void startPositioning() {
         new Thread(() -> {
             while (!opMode.isStopRequested()) {
                 try {
