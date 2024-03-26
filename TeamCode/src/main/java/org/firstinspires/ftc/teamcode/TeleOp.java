@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VisionPipeline;
 public class TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap, telemetry);
+        Robot robot = new Robot(hardwareMap, telemetry, this);
         waitForStart();
         while (opModeIsActive()) {
 
@@ -30,11 +30,14 @@ public class TeleOp extends LinearOpMode {
                 turnR = 0;
             }
 
-            if (gamepad1.options) {
-                telemetry.addData("robpos x: ", robot.robotPosition.position.x);
-                telemetry.addData("robpos y: ", robot.robotPosition.position.y);
-                telemetry.update();
-            }
+//            if (gamepad1.options) {
+//                telemetry.addData("robpos x: ", robot.robotPosition.position.x);
+//                telemetry.addData("robpos y: ", robot.robotPosition.position.y);
+//                telemetry.update();
+//            }
+            telemetry.addData("robpos x: ", robot.robotPosition.position.x);
+            telemetry.addData("robpos y: ", robot.robotPosition.position.y);
+            telemetry.update();
 
             if (gamepad1.right_bumper) {
                 turnR = 800;

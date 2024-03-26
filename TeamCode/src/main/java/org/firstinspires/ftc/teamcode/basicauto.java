@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Robot;
 public class basicauto extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap, telemetry);
+        Robot robot = new Robot(hardwareMap, telemetry, this);
         waitForStart();
         if (opModeIsActive()) {
             robot.drive.turnToAngle(400, 90);

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
@@ -11,9 +13,8 @@ import java.util.Objects;
 import java.util.Vector;
 
 public class Positioning extends Robot.HardwareDevices {
-
     public RobotPosition position = new RobotPosition(0, 0);
-    private RobotPosition lastPosition;
+    private RobotPosition lastPosition = new RobotPosition(0, 0);
     private final VisionPosition visionPosition = new VisionPosition();
     private final EncoderPosition encoderPosition = new EncoderPosition();
 
@@ -21,20 +22,27 @@ public class Positioning extends Robot.HardwareDevices {
     private Telemetry telemetry;
     private VisionPipeline vision1;
     private VisionPipeline vision2;
+    private LinearOpMode opMode;
 
-    public Positioning(Robot robot, Telemetry telemetry, VisionPipeline vision1, VisionPipeline vision2) {
+    public Positioning(Robot robot, Telemetry telemetry, VisionPipeline vision1, VisionPipeline vision2, LinearOpMode opMode) {
         this.robot = robot;
         this.telemetry = telemetry;
         this.vision1 = vision1;
         this.vision2 = vision2;
+        this.opMode = opMode;
 
-        updatePosition();
+        startPositioning();
     }
 
-    private void updatePosition() {
+    public void startPositioning() {
         new Thread(() -> {
-            while (true) {
-                position = getPosition(telemetry, vision1, vision2);
+            while (!opMode.isStopRequested()) {
+                try {
+                    position = getPosition(telemetry, vision1, vision2);
+                } catch (Exception e) {
+                    telemetry.addData("Error", e.getMessage());
+                    telemetry.update();
+                }
             }
         }).start();
     }

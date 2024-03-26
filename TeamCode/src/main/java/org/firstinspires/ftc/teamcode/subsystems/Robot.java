@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 public class Robot {
     HardwareMap hardwareMap;
     Telemetry telemetry;
+    LinearOpMode opMode;
     public static class HardwareDevices {
         //drive base
         public static DcMotorEx MotorFL; // this is the motor plugged into 0
@@ -42,7 +44,7 @@ public class Robot {
         public static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     }
 
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode opMode) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
@@ -84,9 +86,8 @@ public class Robot {
 
         vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
         vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1]);
-        robotPosition = new Positioning(this, telemetry, vision1, vision2);
+        robotPosition = new Positioning(this, telemetry, vision1, vision2, opMode);
         //positionLogger = new PositionLogger(this, "positionLog " + LocalDateTime.now() + ".csv");
-
     }
     public Drive drive = new Drive();
     public LinearSlide slide = new LinearSlide();
