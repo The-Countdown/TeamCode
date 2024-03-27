@@ -49,12 +49,22 @@ public class Positioning extends Robot.HardwareDevices {
     private RobotPosition getPosition(Telemetry telemetry, VisionPipeline vision1, VisionPipeline vision2) {
         int fieldMaxx = 144;
         int fieldMaxy = 144;
-        RobotPosition vp = visionPosition.getPosition(vision1, vision2, telemetry);
+        RobotPosition vp1 = visionPosition.getPositionVision1(vision1, telemetry);
+        RobotPosition vp2 = visionPosition.getPositionVision1(vision2, telemetry);
         RobotPosition ep = encoderPosition.getPosition(telemetry);
 
-        if (vp != null) {
-            lastPosition = vp;
-        } else if (vp == null) {
+        if (vp1 != null && vp2 != null) {
+            lastPosition.x = (vp1.x + vp2.x) / 2;
+            lastPosition.y = (vp1.y + vp2.y) / 2;
+        } else if (vp1 != null || vp2 != null) {
+            if (vp1 != null) {
+                lastPosition = vp1;
+            }
+            if (vp2 != null) {
+                lastPosition = vp2;
+            }
+
+        } else if (vp1 == null && vp2 == null) {
             lastPosition = ep;
         }
 
@@ -76,7 +86,7 @@ public class Positioning extends Robot.HardwareDevices {
         int cameraOffset2x = -8;
         int cameraOffset2y = -8;
 
-        public RobotPosition getPosition(VisionPipeline vision1, VisionPipeline vision2, Telemetry telemetry) {
+        public RobotPosition getPositionVision1(VisionPipeline vision1, Telemetry telemetry) {
             Map<Integer, String> aprilPosTable = new HashMap<>();
 
             aprilPosTable.put(10, "30|0|north");
@@ -85,15 +95,72 @@ public class Positioning extends Robot.HardwareDevices {
             aprilPosTable.put(8, "143|108|west");
 
             List<VisionPipeline.AprilOffset> offsets1 = vision1.getData();
-//            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData(); // not used right now
 
             List<VisionPipeline.AprilOffset> allOffsets = new ArrayList<>();
             for (VisionPipeline.AprilOffset offset : offsets1) {
                 allOffsets.add(offset);
             }
-//            for (VisionPipeline.AprilOffset offset : offsets2) {
-//                allOffsets.add(offset);
-//            }
+
+            RobotPosition robotpos = new RobotPosition(0, 0, 0);
+            for (VisionPipeline.AprilOffset offset : allOffsets) {
+                int key = offset.id;
+                String value = aprilPosTable.get(key);
+                String[] parts = value.split("\\|");
+                double xpos = Integer.parseInt(parts[0]);
+                double ypos = Integer.parseInt(parts[1]);
+                String direction = parts[2];
+                AprilPosition aprilTag = new AprilPosition(xpos, ypos, direction);
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                } else if (Objects.equals(aprilTag.direction, "south")) {
+                    robotpos.x = - aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
+
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    if (offset.yaw >= 0) {
+                        robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
+                    } else if (offset.yaw <= 0) {
+                        robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
+                    }
+                }
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
+                    robotpos.y = - aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
+
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    if (offset.yaw >= 0) {
+                        robotpos.y = aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                    } else if (offset.yaw <= 0) {
+                        robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
+                    }
+                }
+
+                // Adjust for the cameras not being at the center of the robot
+                robotpos.x = robotpos.x + cameraOffset1x;
+                robotpos.y = robotpos.y + cameraOffset1y;
+            }
+
+            if (robotpos.x == 0 && robotpos.y == 0) {
+                return null;
+            }
+            return robotpos;
+        }
+
+        public RobotPosition getPositionVision2(VisionPipeline vision2, Telemetry telemetry) {
+            Map<Integer, String> aprilPosTable = new HashMap<>();
+
+            aprilPosTable.put(10, "30|0|north");
+            aprilPosTable.put(9, "36|0|north");
+            aprilPosTable.put(7, "143|113|west");
+            aprilPosTable.put(8, "143|108|west");
+
+            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData(); // not used right now
+
+            List<VisionPipeline.AprilOffset> allOffsets = new ArrayList<>();
+            for (VisionPipeline.AprilOffset offset : offsets2) {
+                allOffsets.add(offset);
+            }
 
             RobotPosition robotpos = new RobotPosition(0, 0, 0);
             for (VisionPipeline.AprilOffset offset : allOffsets) {
