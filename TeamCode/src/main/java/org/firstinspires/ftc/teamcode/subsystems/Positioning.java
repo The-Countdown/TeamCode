@@ -211,7 +211,7 @@ public class Positioning extends Robot.HardwareDevices {
 
 
     private class EncoderPosition {
-        private final int wheelDiameter = 90;
+        private final double wheelDiameter = 3.543307;
         private final double wheelCircumference = Math.PI * wheelDiameter;
         private final double motorRPM = 6000;
         private final double gearRatio = 40;
@@ -257,10 +257,8 @@ public class Positioning extends Robot.HardwareDevices {
             double sidewaysMovement = (motor1Vel - motor3Vel + motor2Vel - motor4Vel) / 4;
 
             // Update the robot's position based on the average distance, current yaw angle, and sideways movement
-            RobotPosition position = new RobotPosition(lastPosition.x + avgDistance * Math.cos(currentYawAngle) - sidewaysMovement * Math.sin(currentYawAngle),
+            return new RobotPosition(lastPosition.x + avgDistance * Math.cos(currentYawAngle) - sidewaysMovement * Math.sin(currentYawAngle),
                     lastPosition.y + avgDistance * Math.sin(currentYawAngle) + sidewaysMovement * Math.cos(currentYawAngle), currentYawAngle);
-
-            return position;
         }
     }
 
