@@ -82,8 +82,8 @@ public class Robot {
         int[] visionPortalContainers = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
         VisionPortal[] visionPortals = new VisionPortal[2];
 
-        vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0]);
-        vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1]);
+        vision1 = new VisionPipeline(hardwareMap, telemetry, "Webcam 1", 0, visionPortalContainers[0], visionPortals[0], 1);
+        vision2 = new VisionPipeline(hardwareMap, telemetry, "Webcam 2", 180, visionPortalContainers[1], visionPortals[1], 2);
         robotPosition = new Positioning(this, telemetry, vision1, vision2, opMode);
         positionLogger = new PositionLogger(this, Environment.getExternalStorageDirectory().getAbsolutePath() + "/position.csv", opMode);
     }

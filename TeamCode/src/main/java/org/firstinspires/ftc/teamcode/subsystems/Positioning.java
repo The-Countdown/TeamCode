@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Vector;
 
 public class Positioning extends Robot.HardwareDevices {
-    public RobotPosition position = new RobotPosition(0, 0);
-    private RobotPosition lastPosition = new RobotPosition(0, 0);
+    public RobotPosition position = new RobotPosition(0, 0, 0);
+    private RobotPosition lastPosition = new RobotPosition(0, 0, 0);
     private final VisionPosition visionPosition = new VisionPosition();
     private final EncoderPosition encoderPosition = new EncoderPosition();
 
@@ -51,7 +51,19 @@ public class Positioning extends Robot.HardwareDevices {
         RobotPosition vp = visionPosition.getPosition(vision1, vision2, telemetry);
         RobotPosition ep = encoderPosition.getPosition(telemetry);
 
-        lastPosition = vp != null ? vp : ep;
+//        if (vp != null) {
+//            lastPosition = vp;
+//        } else if (vp == null) {
+//            lastPosition = ep;
+//        }
+
+        lastPosition = ep;
+
+        if (vp.rot == 0 && ep.rot == 0) {
+            lastPosition.rot = 0;
+        } else if (ep.rot != 0) {
+            lastPosition.rot = ep.rot;
+        }
         return lastPosition;
     }
 
@@ -59,15 +71,19 @@ public class Positioning extends Robot.HardwareDevices {
         public RobotPosition getPosition(VisionPipeline vision1, VisionPipeline vision2, Telemetry telemetry) {
             Map<Integer, String> aprilPosTable = new HashMap<>();
 
+            int cameraOffset1x = -8;
+            int cameraOffset1y = -7;
+            int cameraOffset2x = -8;
+            int cameraOffset2y = -8;
+
             // Add some key-value pairs to the dictionary
             aprilPosTable.put(10, "30|0|north");
             aprilPosTable.put(9, "36|0|north");
             aprilPosTable.put(7, "143|113|west");
             aprilPosTable.put(8, "143|108|west");
 
-
             List<VisionPipeline.AprilOffset> offsets1 = vision1.getData();
-            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData();
+            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData(); // not used right now
 
             List<VisionPipeline.AprilOffset> allOffsets = new ArrayList<>();
             for (VisionPipeline.AprilOffset offset : offsets1) {
@@ -77,7 +93,7 @@ public class Positioning extends Robot.HardwareDevices {
                 allOffsets.add(offset);
             }
 
-            RobotPosition robotpos = new RobotPosition(0, 0);
+            RobotPosition robotpos = new RobotPosition(0, 0, 0);
             double lastx = 0;
             double lasty = 0;
 
@@ -94,7 +110,6 @@ public class Positioning extends Robot.HardwareDevices {
                 double ypos = Integer.parseInt(parts[1]);
                 telemetry.addData("y pos int: ", ypos);
                 String direction = parts[2];
-                telemetry.addData("direction: ", direction);
                 AprilPosition aprilTag = new AprilPosition(xpos, ypos, direction);
                 telemetry.addData("aprilTag: ", String.valueOf(aprilTag.x) + " " + String.valueOf(aprilTag.y) + " " + String.valueOf(aprilTag.direction));
 
@@ -160,6 +175,10 @@ public class Positioning extends Robot.HardwareDevices {
                         }
                     }
                 }
+
+                // Ajust for the cameras not being at the center of the robot
+                robotpos.x = robotpos.x + cameraOffset1x;
+                robotpos.y = robotpos.y + cameraOffset1y;
 
                 telemetry.addData("robot pos y", robotpos.y);
 
@@ -239,7 +258,7 @@ public class Positioning extends Robot.HardwareDevices {
 
             // Update the robot's position based on the average distance, current yaw angle, and sideways movement
             RobotPosition position = new RobotPosition(lastPosition.x + avgDistance * Math.cos(currentYawAngle) - sidewaysMovement * Math.sin(currentYawAngle),
-                    lastPosition.y + avgDistance * Math.sin(currentYawAngle) + sidewaysMovement * Math.cos(currentYawAngle));
+                    lastPosition.y + avgDistance * Math.sin(currentYawAngle) + sidewaysMovement * Math.cos(currentYawAngle), currentYawAngle);
 
             return position;
         }
@@ -248,10 +267,12 @@ public class Positioning extends Robot.HardwareDevices {
     public class RobotPosition {
         public double x;
         public double y;
+        public double rot;
 
-        public RobotPosition(double x, double y) {
+        public RobotPosition(double x, double y, double rot) {
             this.x = x;
             this.y = y;
+            this.rot = rot;
         }
     }
 }

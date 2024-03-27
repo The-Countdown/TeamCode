@@ -37,6 +37,7 @@ public class TeleOp extends LinearOpMode {
 //            }
             telemetry.addData("robpos x: ", robot.robotPosition.position.x);
             telemetry.addData("robpos y: ", robot.robotPosition.position.y);
+            telemetry.addData("robpos rot: ", robot.robotPosition.position.rot);
             telemetry.update();
 
             if (gamepad1.right_bumper) {

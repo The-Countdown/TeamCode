@@ -24,7 +24,7 @@ public class PositionLogger extends Robot.HardwareDevices {
         try {
             FileWriter writer = new FileWriter(filePath, true);
             Positioning.RobotPosition position = robot.robotPosition.position;
-            writer.write(position.x + "," + position.y + "\n");
+            writer.write(position.x + "," + position.y + "," + position.rot + "\n");
             writer.close();
         } catch (IOException e) {
             robot.telemetry.addData("Error", e.getMessage());

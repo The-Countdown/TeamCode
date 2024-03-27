@@ -45,8 +45,9 @@ public class VisionPipeline extends Robot.HardwareDevices {
     int cameraAngleOffset;
     Boolean init = false;
     OpenCvCamera camera;
+    int id;
 
-    public VisionPipeline(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset, int viewportContainerId, VisionPortal visionPortal) {
+    public VisionPipeline(HardwareMap hardwareMap, Telemetry telemetry, String webcamName, int cameraAngleOffset, int viewportContainerId, VisionPortal visionPortal, int id) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.webcamName = webcamName;
@@ -54,6 +55,7 @@ public class VisionPipeline extends Robot.HardwareDevices {
         this.viewportContainerId = viewportContainerId;
         this.cameraAngleOffset = cameraAngleOffset;
         this.visionPortal = visionPortal;
+        this.id = id;
 
         initAprilTag();
 
