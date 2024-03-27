@@ -51,13 +51,13 @@ public class Positioning extends Robot.HardwareDevices {
         RobotPosition vp = visionPosition.getPosition(vision1, vision2, telemetry);
         RobotPosition ep = encoderPosition.getPosition(telemetry);
 
-//        if (vp != null) {
-//            lastPosition = vp;
-//        } else if (vp == null) {
-//            lastPosition = ep;
-//        }
+        if (vp != null) {
+            lastPosition = vp;
+        } else if (vp == null) {
+            lastPosition = ep;
+        }
 
-        lastPosition = ep;
+//        lastPosition = ep;
 
         if (vp.rot == 0 && ep.rot == 0) {
             lastPosition.rot = 0;
@@ -98,24 +98,13 @@ public class Positioning extends Robot.HardwareDevices {
             double lasty = 0;
 
             for (VisionPipeline.AprilOffset offset : allOffsets) {
-                telemetry.addData("ftc pose x: ", offset.ftcposx);
-                telemetry.addData("ftc pose y: ", offset.ftcposy);
-                telemetry.addData("ftc pose z: ", offset.ftcposz);
                 int key = offset.id;
-                telemetry.addData("April id: ", key);
                 String value = aprilPosTable.get(key);
                 String[] parts = value.split("\\|");
                 double xpos = Integer.parseInt(parts[0]);
-                telemetry.addData("x pos int: ", xpos);
                 double ypos = Integer.parseInt(parts[1]);
-                telemetry.addData("y pos int: ", ypos);
                 String direction = parts[2];
                 AprilPosition aprilTag = new AprilPosition(xpos, ypos, direction);
-                telemetry.addData("aprilTag: ", String.valueOf(aprilTag.x) + " " + String.valueOf(aprilTag.y) + " " + String.valueOf(aprilTag.direction));
-
-                telemetry.addData("Pitch: ", offset.pitch);
-                telemetry.addData("Roll: ", offset.roll);
-                telemetry.addData("Yaw", offset.yaw);
                 if (lastx == 0) {
                     if (Objects.equals(aprilTag.direction, "north")) {
                         robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
@@ -144,7 +133,6 @@ public class Positioning extends Robot.HardwareDevices {
                         robotpos.x = robotpos.x + lastx / 2;
                     }
                 }
-                telemetry.addData("robot pos x", robotpos.x);
                 if (lasty == 0) {
                     if (Objects.equals(aprilTag.direction, "north")) {
                         double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
@@ -180,15 +168,10 @@ public class Positioning extends Robot.HardwareDevices {
                 robotpos.x = robotpos.x + cameraOffset1x;
                 robotpos.y = robotpos.y + cameraOffset1y;
 
-                telemetry.addData("robot pos y", robotpos.y);
 
                 lastx = robotpos.x;
                 lasty = robotpos.y;
-                telemetry.addData("last x", lastx);
-                telemetry.addData("last y", lasty);
             }
-
-            telemetry.update();
 
             if (robotpos.x == 0 && robotpos.y == 0) {
                 return null;
