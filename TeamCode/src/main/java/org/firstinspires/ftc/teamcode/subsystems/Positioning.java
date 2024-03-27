@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +47,8 @@ public class Positioning extends Robot.HardwareDevices {
     }
 
     private RobotPosition getPosition(Telemetry telemetry, VisionPipeline vision1, VisionPipeline vision2) {
+        int fieldMaxx = 144;
+        int fieldMaxy = 144;
         RobotPosition vp = visionPosition.getPosition(vision1, vision2, telemetry);
         RobotPosition ep = encoderPosition.getPosition(telemetry);
 
@@ -59,44 +60,42 @@ public class Positioning extends Robot.HardwareDevices {
 
 //        lastPosition = ep;
 
-        if (vp.rot == 0 && ep.rot == 0) {
-            lastPosition.rot = 0;
-        } else if (ep.rot != 0) {
-            lastPosition.rot = ep.rot;
+        lastPosition.rot = imu.getAngularOrientation().firstAngle;
+        if (lastPosition.x > fieldMaxx) {
+            lastPosition.x = fieldMaxx;
+        }
+        if (lastPosition.y > fieldMaxy) {
+            lastPosition.y = fieldMaxy;
         }
         return lastPosition;
     }
 
     private class VisionPosition {
+        int cameraOffset1x = -8;
+        int cameraOffset1y = -7;
+        int cameraOffset2x = -8;
+        int cameraOffset2y = -8;
+
         public RobotPosition getPosition(VisionPipeline vision1, VisionPipeline vision2, Telemetry telemetry) {
             Map<Integer, String> aprilPosTable = new HashMap<>();
 
-            int cameraOffset1x = -8;
-            int cameraOffset1y = -7;
-            int cameraOffset2x = -8;
-            int cameraOffset2y = -8;
-
-            // Add some key-value pairs to the dictionary
             aprilPosTable.put(10, "30|0|north");
             aprilPosTable.put(9, "36|0|north");
             aprilPosTable.put(7, "143|113|west");
             aprilPosTable.put(8, "143|108|west");
 
             List<VisionPipeline.AprilOffset> offsets1 = vision1.getData();
-            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData(); // not used right now
+//            List<VisionPipeline.AprilOffset> offsets2 = vision2.getData(); // not used right now
 
             List<VisionPipeline.AprilOffset> allOffsets = new ArrayList<>();
             for (VisionPipeline.AprilOffset offset : offsets1) {
                 allOffsets.add(offset);
             }
-            for (VisionPipeline.AprilOffset offset : offsets2) {
-                allOffsets.add(offset);
-            }
+//            for (VisionPipeline.AprilOffset offset : offsets2) {
+//                allOffsets.add(offset);
+//            }
 
             RobotPosition robotpos = new RobotPosition(0, 0, 0);
-            double lastx = 0;
-            double lasty = 0;
-
             for (VisionPipeline.AprilOffset offset : allOffsets) {
                 int key = offset.id;
                 String value = aprilPosTable.get(key);
@@ -105,72 +104,35 @@ public class Positioning extends Robot.HardwareDevices {
                 double ypos = Integer.parseInt(parts[1]);
                 String direction = parts[2];
                 AprilPosition aprilTag = new AprilPosition(xpos, ypos, direction);
-                if (lastx == 0) {
-                    if (Objects.equals(aprilTag.direction, "north")) {
-                        robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
-                    } else if (Objects.equals(aprilTag.direction, "south")) {
-                        robotpos.x = - aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
-                    } else if (Objects.equals(aprilTag.direction, "east")) {
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                } else if (Objects.equals(aprilTag.direction, "south")) {
+                    robotpos.x = - aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
 
-                    } else if (Objects.equals(aprilTag.direction, "west")) {
-                        if (offset.yaw >= 0) {
-                            robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
-                        } else if (offset.yaw <= 0) {
-                            robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
-                        }
-                    }
-                } else if (lastx != 0) {
-                    if (Objects.equals(aprilTag.direction, "north")) {
-                        robotpos.x = aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
-                        robotpos.x = robotpos.x + lastx / 2;
-                    } else if (Objects.equals(aprilTag.direction, "south")) {
-                        robotpos.x = - aprilTag.x + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx;
-                        robotpos.x = robotpos.x + lastx / 2;
-                    } else if (Objects.equals(aprilTag.direction, "east")) {
-
-                    } else if (Objects.equals(aprilTag.direction, "west")) {
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    if (offset.yaw >= 0) {
                         robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
-                        robotpos.x = robotpos.x + lastx / 2;
+                    } else if (offset.yaw <= 0) {
+                        robotpos.x = aprilTag.x - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy + offset.ftcposx - offset.ftcposy;
                     }
                 }
-                if (lasty == 0) {
-                    if (Objects.equals(aprilTag.direction, "north")) {
-                        double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
-                        robotpos.y = - aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
-                    } else if (Objects.equals(aprilTag.direction, "east")) {
+                if (Objects.equals(aprilTag.direction, "north")) {
+                    double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
+                    robotpos.y = - aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                } else if (Objects.equals(aprilTag.direction, "east")) {
 
-                    } else if (Objects.equals(aprilTag.direction, "west")) {
-                        if (offset.yaw >= 0) {
-                            robotpos.y = aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
-                        } else if (offset.yaw <= 0) {
-                            robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
-                        }
-                    }
-                } else if (lasty != 0) {
-                    if (Objects.equals(aprilTag.direction, "north")) {
-                        double inter = Math.tan(Math.toRadians(45)) * offset.ftcposy;
-                        robotpos.y = - aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
-                        robotpos.y = robotpos.y + lasty / 2;
-                    } else if (Objects.equals(aprilTag.direction, "east")) {
-
-                    } else if (Objects.equals(aprilTag.direction, "west")) {
-                        if (offset.yaw >= 0) {
-                            robotpos.y = aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
-                            robotpos.y = robotpos.y + lasty / 2;
-                        } else if (offset.yaw <= 0) {
-                            robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
-                            robotpos.y = robotpos.y + lasty / 2;
-                        }
+                } else if (Objects.equals(aprilTag.direction, "west")) {
+                    if (offset.yaw >= 0) {
+                        robotpos.y = aprilTag.y + Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy;
+                    } else if (offset.yaw <= 0) {
+                        robotpos.y = aprilTag.y - Math.tan(Math.toRadians(offset.yaw)) * offset.ftcposy - offset.ftcposx;
                     }
                 }
 
-                // Ajust for the cameras not being at the center of the robot
+                // Adjust for the cameras not being at the center of the robot
                 robotpos.x = robotpos.x + cameraOffset1x;
                 robotpos.y = robotpos.y + cameraOffset1y;
-
-
-                lastx = robotpos.x;
-                lasty = robotpos.y;
             }
 
             if (robotpos.x == 0 && robotpos.y == 0) {
@@ -198,7 +160,7 @@ public class Positioning extends Robot.HardwareDevices {
         private final double wheelCircumference = Math.PI * wheelDiameter;
         private final double motorRPM = 6000;
         private final double gearRatio = 40;
-        private final double ticksPerRev = motorRPM/gearRatio;
+        private final double ticksPerRev = motorRPM / gearRatio;
 
         private double lastMotor1Pos = 0;
         private double lastMotor2Pos = 0;
@@ -251,6 +213,18 @@ public class Positioning extends Robot.HardwareDevices {
         public double rot;
 
         public RobotPosition(double x, double y, double rot) {
+            this.x = x;
+            this.y = y;
+            this.rot = rot;
+        }
+    }
+
+    public class RobotPositionFinal {
+        public double x;
+        public double y;
+        public double rot;
+
+        public RobotPositionFinal(double x, double y, double rot) {
             this.x = x;
             this.y = y;
             this.rot = rot;

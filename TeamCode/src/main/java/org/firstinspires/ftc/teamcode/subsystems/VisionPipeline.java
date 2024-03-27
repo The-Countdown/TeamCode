@@ -113,7 +113,6 @@ public class VisionPipeline extends Robot.HardwareDevices {
         }
     }
     public List<CameraAngle> aprilTagPos() {
-//        telemetry.addData("Trying to ", "detect april tags");
         CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
         double width = 320;
         double height = 240;
@@ -129,40 +128,16 @@ public class VisionPipeline extends Robot.HardwareDevices {
             if (tx > (width / 2)) {
                 angle = -angle;
             }
-//            angle = robotOrientation.firstAngle + (cameraAngleOffset + angle);
-//            if (angle < 0) {
-//                angle = 360 + angle;
-//            }
-//            telemetr y.addData("April id: ", detection.id);
-//            telemetry.addData("Camera Width: ", width);
-//            telemetry.addData("Camera FOV (radians)", fov);
-//            telemetry.addData("targetPosition: ", tx);
-//            telemetry.addData("targetPosition: ", ty);
-//            telemetry.addData("Detection Angle: ", angle);
-            //telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
-//            telemetry.addData("cameraAngleOffset", cameraAngleOffset);
             Angles.add(new CameraAngle(detection.id, angle));
         }
-//        telemetry.update();
         return Angles;
     }
     public List<AprilOffset> getData() {
-//        telemetry.addData("Trying to ", "detect april tags");
         CameraCharacteristics camera = hardwareMap.get(WebcamName.class, webcamName).getCameraCharacteristics();
         List<AprilOffset> offsets = new ArrayList();
         for (AprilTagDetection detection : this.AprilTagDetect()) {
-
-//            telemetr y.addData("April id: ", detection.id);
-//            telemetry.addData("Camera Width: ", width);
-//            telemetry.addData("Camera FOV (radians)", fov);
-//            telemetry.addData("targetPosition: ", tx);
-//            telemetry.addData("targetPosition: ", ty);
-//            telemetry.addData("Detection Angle: ", angle);
-            //telemetry.addData("Robot Angle: ", robotOrientation.firstAngle);
-//            telemetry.addData("cameraAngleOffset", cameraAngleOffset);
             offsets.add(new AprilOffset(detection.id, detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z, detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
         }
-//        telemetry.update();
         return offsets;
     }
 }
