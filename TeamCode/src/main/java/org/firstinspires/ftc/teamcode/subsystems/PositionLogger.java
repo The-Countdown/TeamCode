@@ -20,6 +20,10 @@ public class PositionLogger extends Robot.HardwareDevices {
         startLogging();
     }
 
+    public void stopLogging() {
+        timer.cancel();
+    }
+
     private void logPosition() {
         try {
             FileWriter writer = new FileWriter(filePath, true);

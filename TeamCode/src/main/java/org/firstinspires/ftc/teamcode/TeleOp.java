@@ -30,11 +30,6 @@ public class TeleOp extends LinearOpMode {
                 turnR = 0;
             }
 
-//            if (gamepad1.options) {
-//                telemetry.addData("robpos x: ", robot.robotPosition.position.x);
-//                telemetry.addData("robpos y: ", robot.robotPosition.position.y);
-//                telemetry.update();
-//            }
             telemetry.addData("robpos x: ", robot.robotPosition.position.x);
             telemetry.addData("robpos y: ", robot.robotPosition.position.y);
             telemetry.addData("robpos rot: ", robot.robotPosition.position.rot);
@@ -114,5 +109,6 @@ public class TeleOp extends LinearOpMode {
                 robot.claw.closeLeftClaw();
             }
         }
+        robot.positionLogger.stopLogging();
     }
 }
