@@ -11,14 +11,16 @@ public class LinearSlide extends Robot.HardwareDevices {
     }
 
     public void move(double velocity, double amount) {
+        double start = LinearSlideR.getCurrentPosition();
+
         move(velocity);
 
         if (amount > 0) {
-            while (Math.abs(LinearSlideR.getCurrentPosition()) < amount) {
+            while (Math.abs(LinearSlideR.getCurrentPosition() - start) < amount) {
                 //wait
             }
         } else {
-            while (LinearSlideR.getCurrentPosition() > amount) {
+            while (LinearSlideR.getCurrentPosition() - start > amount) {
                 //wait
             }
         }
